@@ -2,8 +2,8 @@ import { useState } from 'react'
 import {
   Activity,
   ArrowDownRight,
-  ArrowUpRight,
   BarChart3,
+  BriefcaseBusiness,
   ChevronRight,
   CircleDollarSign,
   Clock3,
@@ -18,11 +18,12 @@ import {
   Wallet,
 } from 'lucide-react'
 import type { PageId, Signal } from '../types'
-import { DATA_AS_OF, EQUITY_CURVE, SIGNALS } from '../data/market'
+import { DATA_AS_OF, SIGNALS } from '../data/market'
 import { useApp } from '../lib/store'
+import { useLive } from '../lib/live'
 import { inr, pct, shortDateTime, timeAgo } from '../lib/format'
-import { Button, MiniSparkline, PageHeader, Pill, ProgressBar, StatusDot } from '../components/ui'
-import { EquityChart } from '../components/charts'
+import { Button, EmptyState, MiniSparkline, PageHeader, Pill, StatusDot } from '../components/ui'
+import { SystemsChart } from '../components/charts'
 import { DemoBanner } from '../components/layout'
 
 export function Overview({
@@ -32,12 +33,13 @@ export function Overview({
   navigate: (page: PageId) => void
   openSignal: (signal: Signal) => void
 }) {
-  const { state, portfolio, runScan, addToast } = useApp()
+  const { state, runScan, addToast } = useApp()
+  const live = useLive()
   const [scanning, setScanning] = useState(false)
 
   const topSignals = [...SIGNALS].sort((a, b) => b.score - a.score).slice(0, 4)
-  const exposureTone = portfolio.exposurePct > 55 ? 'red' : portfolio.exposurePct > 45 ? 'amber' : 'lime'
-  const riskPct = (portfolio.openRisk / portfolio.equity) * 100
+  const account = live.status === 'ok' ? live.data.account : null
+  const gate = live.status === 'ok' ? live.data.gate : null
 
   async function scan() {
     setScanning(true)
@@ -48,12 +50,12 @@ export function Overview({
   return (
     <>
       <PageHeader
-        eyebrow="NSE · Swing desk · Paper account"
+        eyebrow="NSE · Swing desk · Zerodha account"
         title="Command overview"
-        subtitle="One view of capital, risk, scanner output and system health. Every figure below is simulated fixture data until a private engine bridge is configured."
+        subtitle="Capital and system performance come from the live export (live.json). Scanner, journal, orders and execution panels remain demo fixtures."
         actions={
           <>
-            <Button variant="ghost" onClick={() => addToast({ tone: 'info', title: 'Snapshot pinned', message: 'Demo overview snapshot prepared for review.' })}>
+            <Button variant="ghost" onClick={() => addToast({ tone: 'info', title: 'Snapshot pinned', message: 'Overview snapshot prepared for review.' })}>
               <BarChart3 /> Snapshot
             </Button>
             <Button variant="primary" onClick={scan} disabled={scanning}>
@@ -65,54 +67,51 @@ export function Overview({
       />
       <DemoBanner onSystem={() => navigate('system')} />
 
-      <section className="kpi-grid" aria-label="Portfolio summary">
+      <section className="kpi-grid" aria-label="Account summary">
         <div className="card kpi-card featured">
           <div className="kpi-label">
-            <Wallet /> Account equity <Pill tone="lime">Paper</Pill>
+            <Wallet /> Account equity {live.status === 'ok' ? <Pill tone="lime">Live</Pill> : <Pill tone="amber">{live.status === 'error' ? 'Demo · fetch failed' : 'Loading'}</Pill>}
           </div>
-          <div className="kpi-value">{inr(portfolio.equity)}</div>
+          <div className="kpi-value">{account ? inr(account.equity) : '—'}</div>
           <div className="kpi-delta">
-            <span className="chip">
-              <ArrowUpRight size={10} /> {pct(portfolio.totalPnlPct)}
+            <span className="chip">{account ? account.broker.toLowerCase() : 'live.json'}</span>
+            <span>
+              {account
+                ? account.floor_status === 'below'
+                  ? `below the ${inr(account.capital_floor)} floor`
+                  : `at or above the ${inr(account.capital_floor)} floor`
+                : 'Fetching live snapshot…'}
             </span>
-            <span>{inr(portfolio.totalPnl)} total</span>
-          </div>
-          <div className="kpi-spark" aria-hidden="true">
-            <MiniSparkline data={EQUITY_CURVE.slice(-42).map((point) => point.equity)} width={90} height={44} fill />
           </div>
         </div>
         <div className="card kpi-card">
           <div className="kpi-label">
-            <TrendingUp /> Today's P&amp;L
+            <CircleDollarSign /> Free cash
           </div>
-          <div className="kpi-value pos">{inr(portfolio.dayPnl)}</div>
+          <div className="kpi-value">{account ? inr(account.cash) : '—'}</div>
           <div className="kpi-delta">
-            <span className="chip">
-              <ArrowUpRight size={10} /> {pct(portfolio.dayPnlPct)}
-            </span>
-            <span>vs prior close</span>
+            <span className="chip">settled &amp; available</span>
+            <span>{account ? account.capital_plan_note : ''}</span>
           </div>
         </div>
         <div className="card kpi-card">
           <div className="kpi-label">
-            <CircleDollarSign /> Unrealised P&amp;L
+            <BriefcaseBusiness /> Open positions
           </div>
-          <div className="kpi-value pos">{inr(portfolio.unrealised)}</div>
+          <div className="kpi-value">{account ? account.n_positions : '—'}</div>
           <div className="kpi-delta">
-            <span className="chip">
-              <ArrowUpRight size={10} /> {pct(portfolio.unrealisedPct)}
-            </span>
-            <span>on {inr(portfolio.invested)} invested</span>
+            <span className="chip">{account && account.holdings.length === 0 ? 'fully flat' : `${account?.holdings.length ?? 0} holdings`}</span>
+            <span>live broker holdings · not the demo ledger</span>
           </div>
         </div>
         <div className="card kpi-card">
           <div className="kpi-label">
-            <ShieldAlert /> Open risk
+            <ShieldAlert /> Market gate {gate ? <Pill tone={gate.filter === 'ON' ? 'lime' : 'amber'}>{gate.filter === 'ON' ? 'In market' : 'Out of market'}</Pill> : null}
           </div>
-          <div className="kpi-value">{inr(portfolio.openRisk)}</div>
+          <div className="kpi-value">{gate ? pct(gate.gap_pct) : '—'}</div>
           <div className="kpi-delta">
-            <span className="chip">{riskPct.toFixed(2)}% of equity</span>
-            <span>{portfolio.openPositions} positions</span>
+            <span className="chip">NIFTY vs 200-DMA</span>
+            <span>{gate ? `next decision ${gate.next_decision}` : ''}</span>
           </div>
         </div>
       </section>
@@ -123,18 +122,71 @@ export function Overview({
             <div>
               <div className="card-title-row">
                 <LineChart className="icon-inline" />
-                <h2 className="card-title">Equity curve</h2>
-                <Pill tone="amber">Simulated</Pill>
+                <h2 className="card-title">System performance</h2>
+                {live.status === 'ok' ? <Pill tone="lime">Live</Pill> : <Pill tone="amber">Demo</Pill>}
               </div>
               <p className="card-sub">
-                Strategy {portfolio.cagr.toFixed(1)}% CAGR · max drawdown {pct(portfolio.maxDrawdown)}
+                Monthly equity index, base 100 · 141 tracked months
               </p>
             </div>
             <button type="button" className="section-link" onClick={() => navigate('research')}>
               Research <ChevronRight />
             </button>
           </div>
-          <EquityChart data={EQUITY_CURVE} />
+          {live.status === 'ok' ? (
+            <>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '10px 0 0' }}>
+                {live.data.systems.map((system) => (
+                  <div
+                    className="card"
+                    key={system.name}
+                    style={{ flex: '1 1 220px', minWidth: 200, padding: '10px 12px', background: 'rgba(13,18,25,0.55)' }}
+                  >
+                    <div className="card-title-row" style={{ fontSize: 10 }}>
+                      <strong style={{ color: system.name === 'CHAKRA' ? '#c7f36b' : '#63e6be' }}>{system.name}</strong>
+                      <Pill tone={system.status === 'LIVE' ? 'mint' : 'amber'}>{system.status}</Pill>
+                    </div>
+                    <div className="cost-row" style={{ border: 0 }}>
+                      <span>CAGR</span>
+                      <strong>{pct(system.cagr_pct, 1)}</strong>
+                    </div>
+                    <div className="cost-row" style={{ border: 0 }}>
+                      <span>Max drawdown</span>
+                      <strong className="neg">{pct(system.max_dd_pct, 1)} daily</strong>
+                    </div>
+                    <div className="cost-row" style={{ border: 0 }}>
+                      <span className="mono" style={{ color: 'var(--muted-dim)' }}>month-end</span>
+                      <strong className="neg" style={{ fontSize: 9 }}>{pct(system.max_dd_monthly_pct, 1)}</strong>
+                    </div>
+                    <div className="cost-row" style={{ border: 0 }}>
+                      <span>Sharpe</span>
+                      <strong>{system.sharpe.toFixed(1)}</strong>
+                    </div>
+                    <div className="cost-row" style={{ border: 0 }}>
+                      <span>Positive months</span>
+                      <strong>{system.positive_months} / {system.months}</strong>
+                    </div>
+                    <div style={{ color: 'var(--muted-dim)', fontSize: 8.5, marginTop: 6, fontFamily: 'var(--font-mono)' }}>
+                      {system.status === 'PARKED' ? 'Parked · activates at ₹4.5L capital' : 'Live allocation'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <SystemsChart systems={live.data.systems} />
+              <div className="chart-foot">
+                <span>Max drawdown headlines are daily-basis; month-end closing figures are shown above.</span>
+                <span>Backtested / tracked index · base 100 · not account equity</span>
+              </div>
+            </>
+          ) : (
+            <div style={{ padding: 18 }}>
+              <EmptyState
+                icon={<LineChart />}
+                title={live.status === 'error' ? 'Live curves unavailable' : 'Loading system curves…'}
+                text={live.status === 'error' ? `${live.error} — system performance will appear once live.json is reachable.` : 'Fetching exported engine data.'}
+              />
+            </div>
+          )}
         </div>
 
         <div className="right-stack">
@@ -143,57 +195,52 @@ export function Overview({
               <div>
                 <div className="card-title-row">
                   <ShieldCheck className="icon-inline" />
-                  <h2 className="card-title">Risk posture</h2>
+                  <h2 className="card-title">Regime gate</h2>
                 </div>
-                <p className="card-sub">Policy enforced before every entry</p>
+                <p className="card-sub">200-DMA filter · monthly decision cycle</p>
               </div>
-              <Pill tone={state.entriesPaused ? 'red' : 'mint'}>{state.entriesPaused ? 'Paused' : 'Governed'}</Pill>
+              {gate ? <Pill tone={gate.filter === 'ON' ? 'lime' : 'amber'}>Filter {gate.filter}</Pill> : <Pill tone="amber">Loading</Pill>}
             </div>
             <div className="risk-gauge-row">
-              <div
-                className="gauge"
-                style={{ background: `conic-gradient(var(--${exposureTone === 'lime' ? 'lime' : exposureTone}) 0 ${portfolio.exposurePct}%, #1b2531 ${portfolio.exposurePct}% 100%)` }}
-                aria-label={`Portfolio exposure ${portfolio.exposurePct.toFixed(1)} percent`}
-              >
-                <div className="gauge-center">
-                  <div className="gauge-value">{portfolio.exposurePct.toFixed(0)}%</div>
-                  <div className="gauge-label">Exposure</div>
-                </div>
-              </div>
               <div className="risk-metrics">
                 <div className="risk-metric">
-                  <span>Exposure limit</span>
-                  <strong>{state.risk.maxPortfolioExposurePct}%</strong>
+                  <span>NIFTY 50 close</span>
+                  <strong>{gate ? gate.nifty_close.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : '—'}</strong>
                 </div>
                 <div className="risk-metric">
-                  <span>Open risk</span>
-                  <strong>{riskPct.toFixed(2)}%</strong>
+                  <span>200-DMA</span>
+                  <strong>{gate ? gate.dma200.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : '—'}</strong>
                 </div>
                 <div className="risk-metric">
-                  <span>Positions</span>
-                  <strong>
-                    {portfolio.openPositions} / {state.risk.maxOpenPositions}
-                  </strong>
+                  <span>Gap to 200-DMA</span>
+                  <strong className={gate && gate.gap_pct < 0 ? 'neg' : 'pos'}>{gate ? pct(gate.gap_pct) : '—'}</strong>
+                </div>
+                <div className="risk-metric">
+                  <span>Last decision</span>
+                  <strong>{gate ? gate.last_decision : '—'}</strong>
+                </div>
+                <div className="risk-metric">
+                  <span>Next decision</span>
+                  <strong>{gate ? gate.next_decision : '—'}</strong>
                 </div>
               </div>
             </div>
             <div className="budget-row">
               <div className="budget-labels">
-                <span>Daily loss budget</span>
+                <span>Capital plan</span>
                 <strong>
-                  {inr(state.risk.equity * (state.risk.dailyLossLimitPct / 100))} limit · {inr(portfolio.dayPnl)} used
+                  {account
+                    ? account.floor_status === 'below'
+                      ? `Building toward ${inr(account.capital_floor)} floor`
+                      : `Floor of ${inr(account.capital_floor)} met`
+                    : '—'}
                 </strong>
               </div>
-              <ProgressBar value={Math.max(0, (portfolio.dayPnl / (state.risk.equity * (state.risk.dailyLossLimitPct / 100))) * 100)} tone={exposureTone} />
             </div>
             <div style={{ display: 'flex', gap: 6, marginTop: 13 }}>
               <button type="button" className="section-link" onClick={() => navigate('risk')}>
                 Risk center <ChevronRight />
               </button>
-              <span style={{ color: 'var(--line-bright)' }}>·</span>
-              <span className="mono" style={{ color: 'var(--muted-dim)', fontSize: 8.5 }}>
-                {state.entriesPaused ? 'Entries suspended' : 'Entries permitted'}
-              </span>
             </div>
           </div>
 
@@ -221,7 +268,7 @@ export function Overview({
               <div className="health-row">
                 <span>Market data</span>
                 <span className="health-state">
-                  <StatusDot tone="warn" /> Fixture · 23 Oct
+                  <StatusDot tone={live.status === 'ok' ? 'good' : 'warn'} /> {live.status === 'ok' ? `live.json · ${live.data.data_asof}` : 'live.json unreachable'}
                 </span>
               </div>
               <div className="health-row">
@@ -241,69 +288,92 @@ export function Overview({
         </div>
       </section>
 
+      <section style={{ marginTop: 10 }}>
+        <div className="card">
+          <div className="section-head">
+            <div>
+              <h2>Recent months</h2>
+              <p>Monthly system returns · {live.status === 'ok' ? `${live.data.recent_months.length} months through ${live.data.recent_months[live.data.recent_months.length - 1].month}` : 'loading'}</p>
+            </div>
+            {live.status === 'ok' ? <Pill tone="lime">Live</Pill> : <Pill tone="amber">Loading</Pill>}
+          </div>
+          {live.status === 'ok' ? (
+            <div className="table-wrap">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    <th>CHAKRA</th>
+                    <th>DHRUVA</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...live.data.recent_months].reverse().map((row) => (
+                    <tr key={row.month}>
+                      <td>{new Date(`${row.month}T12:00:00`).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</td>
+                      <td className={row.chakra_pct === 0 ? 'num' : `num ${row.chakra_pct < 0 ? 'neg' : 'pos'}`} style={row.chakra_pct === 0 ? { color: 'var(--muted-dim)' } : undefined}>{pct(row.chakra_pct, 1)}</td>
+                      <td className={row.dhruva_pct === 0 ? 'num' : `num ${row.dhruva_pct < 0 ? 'neg' : 'pos'}`} style={row.dhruva_pct === 0 ? { color: 'var(--muted-dim)' } : undefined}>{pct(row.dhruva_pct, 1)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div style={{ padding: 18 }}>
+              <EmptyState icon={<TrendingUp />} title="No monthly data" text="Monthly returns appear once live.json is reachable." />
+            </div>
+          )}
+        </div>
+      </section>
+
       <section className="overview-bottom">
         <div className="card table-card">
           <div className="section-head">
             <div>
               <h2>Open positions</h2>
-              <p>
-                {portfolio.openPositions} positions · {inr(portfolio.currentValue)} current value
-              </p>
+              <p>{account ? `${account.n_positions} live holdings · broker ${account.broker.toLowerCase()}` : 'loading live holdings'}</p>
             </div>
             <button type="button" className="section-link" onClick={() => navigate('positions')}>
-              View all <ChevronRight />
+              Positions <ChevronRight />
             </button>
           </div>
-          <div className="table-wrap">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Instrument</th>
-                  <th>Qty</th>
-                  <th>Avg</th>
-                  <th>LTP</th>
-                  <th>P&amp;L</th>
-                  <th>Stop</th>
-                  <th>Risk</th>
-                </tr>
-              </thead>
-              <tbody>
-                {state.positions.slice(0, 5).map((position) => {
-                  const pnl = (position.lastPrice - position.avgPrice) * position.qty
-                  const pnlPct = ((position.lastPrice - position.avgPrice) / position.avgPrice) * 100
-                  return (
-                    <tr key={position.id}>
-                      <td>
-                        <div className="symbol-cell">
-                          <span className="symbol-avatar">{position.symbol.slice(0, 2)}</span>
-                          <div>
-                            <div className="symbol-name">{position.symbol}</div>
-                            <div className="symbol-company">{position.name}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="num">{position.qty}</td>
-                      <td className="num">{inr(position.avgPrice, 2)}</td>
-                      <td className="num">{inr(position.lastPrice, 2)}</td>
-                      <td className={`num ${pnl >= 0 ? 'pos' : 'neg'}`}>
-                        {pnl >= 0 ? '+' : ''}
-                        {inr(pnl)} <span style={{ fontSize: 8 }}>({pct(pnlPct)})</span>
-                      </td>
-                      <td className="num neg">{inr(position.stop, 2)}</td>
-                      <td className="num">{inr(position.riskAmount)}</td>
+          {account && account.holdings.length > 0 ? (
+            <div className="table-wrap">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Instrument</th>
+                    <th>Qty</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {account.holdings.map((holding) => (
+                    <tr key={holding.symbol}>
+                      <td className="symbol-name">{holding.symbol}</td>
+                      <td className="num">{holding.qty}</td>
                     </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div style={{ padding: 18 }}>
+              <EmptyState
+                icon={<BriefcaseBusiness />}
+                title={account ? 'No open positions' : 'Loading holdings…'}
+                text={account ? 'The live account is fully flat. Workflows below and demo ledger positions are on the Positions page.' : 'Fetching broker holdings.'}
+              />
+            </div>
+          )}
         </div>
 
         <div className="card">
           <div className="section-head">
             <div>
               <h2>Scanner pulse</h2>
-              <p>Top-ranked demo setups · {shortDateTime(DATA_AS_OF)}</p>
+              <p>
+                <Pill tone="amber">Demo</Pill> Top-ranked demo setups · {shortDateTime(DATA_AS_OF)}
+              </p>
             </div>
             <button type="button" className="section-link" onClick={() => navigate('scanner')}>
               Scanner <ChevronRight />
@@ -344,7 +414,7 @@ export function Overview({
           <div className="section-head">
             <div>
               <h2>Recent activity</h2>
-              <div className="card-sub">Browser demo ledger · latest events</div>
+              <div className="card-sub">Browser demo ledger · latest events · <span className="mono" style={{ color: 'var(--muted-dim)' }}>DEMO</span></div>
             </div>
             <button type="button" className="section-link" onClick={() => navigate('system')}>
               System logs <ChevronRight />
@@ -374,32 +444,29 @@ export function Overview({
           <div className="card-title-row">
             <Target className="icon-inline" />
             <h2 className="card-title">Today's discipline</h2>
+            <Pill tone="amber">Demo</Pill>
           </div>
           <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
-              { label: 'Trades inside risk plan', value: '6 / 6', tone: 'pos' as const },
-              { label: 'Stop-losses attached', value: '100%', tone: 'pos' as const },
-              { label: 'Revenge-trade flags', value: '0', tone: 'pos' as const },
-              { label: 'Daily loss budget used', value: '0%', tone: 'muted' as const },
+              { label: 'Trades inside risk plan', value: '—' },
+              { label: 'Stop-losses attached', value: '—' },
+              { label: 'Revenge-trade flags', value: '—' },
+              { label: 'Daily loss budget used', value: '—' },
             ].map((item) => (
               <div key={item.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingBottom: 9, borderBottom: '1px solid var(--line-soft)' }}>
                 <span style={{ color: 'var(--muted)', fontSize: 9.5 }}>{item.label}</span>
-                <span className={`mono ${item.tone}`} style={{ fontSize: 10 }}>{item.value}</span>
+                <span className="mono dim" style={{ fontSize: 10 }}>{item.value}</span>
               </div>
             ))}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 12, marginBottom: 12 }}>
             <ArrowDownRight size={12} color="var(--amber)" aria-hidden="true" />
             <span style={{ color: 'var(--muted-dim)', fontSize: 8.5 }}>
-              Research is not qualified. Do not deploy capital based on this fixture.
+              Discipline tracking has no live source yet. System max drawdown headlines are daily-basis — check the month-end figure too.
             </span>
           </div>
         </div>
       </section>
-
-      <div className="mono" style={{ marginTop: 13, color: 'var(--muted-dim)', fontSize: 8, textAlign: 'center' }}>
-        Demo fixture generated locally · not live market data · cash {inr(portfolio.cash)} · invested {inr(portfolio.invested)}
-      </div>
     </>
   )
 }

@@ -3,6 +3,8 @@
 # Live site: https://gulshan1234g5.github.io/trading-dashboard/
 set -e
 cd "$(dirname "$0")"
+# refresh live.json from the real engine output before every deploy
+python3 /root/rlt/scripts/export_dashboard.py --out "$(pwd)/public/live.json"
 npx vite build --base=/trading-dashboard/ --outDir dist
 tmp=$(mktemp -d)
 cp -r dist/. "$tmp"/

@@ -1,0 +1,1259 @@
+{
+  "generated_at": "2026-10-25T17:13:21Z",
+  "data_asof": "2026-10-22",
+  "mode": "REAL",
+  "account": {
+    "broker": "ZERODHA",
+    "cash": 3000.0,
+    "holdings": [],
+    "n_positions": 0,
+    "equity": 3000.0,
+    "capital_floor": 45000,
+    "floor_status": "below",
+    "capital_plan_note": "Rebuilding toward Rs 45,000 floor: Rs 15,000 slots, flexible monthly deposits before month-end decision"
+  },
+  "gate": {
+    "filter": "OFF",
+    "nifty_close": 22687.65,
+    "dma200": 24157.71,
+    "gap_pct": -6.09,
+    "last_decision": "2026-10-22",
+    "next_decision": "2026-10-30"
+  },
+  "systems": [
+    {
+      "name": "CHAKRA",
+      "code": "A",
+      "status": "LIVE",
+      "cagr_pct": 9.3,
+      "max_dd_pct": -44.7,
+      "sharpe": 0.7,
+      "positive_months": 63,
+      "months": 141,
+      "best_month": {
+        "month": "2025-05-31",
+        "ret_pct": 15.2
+      },
+      "worst_month": {
+        "month": "2018-09-30",
+        "ret_pct": -15.0
+      },
+      "total_return_pct": 183.5,
+      "curve": [
+        {
+          "month": "2015-02-28",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-03-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-04-30",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-05-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-06-30",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-07-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-08-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-09-30",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-10-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-11-30",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-12-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2016-01-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2016-02-29",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2016-03-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2016-04-30",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2016-05-31",
+          "equity_index": 97.6435
+        },
+        {
+          "month": "2016-06-30",
+          "equity_index": 100.436
+        },
+        {
+          "month": "2016-07-31",
+          "equity_index": 105.2906
+        },
+        {
+          "month": "2016-08-31",
+          "equity_index": 102.3315
+        },
+        {
+          "month": "2016-09-30",
+          "equity_index": 102.1135
+        },
+        {
+          "month": "2016-10-31",
+          "equity_index": 108.1589
+        },
+        {
+          "month": "2016-11-30",
+          "equity_index": 98.9988
+        },
+        {
+          "month": "2016-12-31",
+          "equity_index": 94.4014
+        },
+        {
+          "month": "2017-01-31",
+          "equity_index": 94.5634
+        },
+        {
+          "month": "2017-02-28",
+          "equity_index": 102.4764
+        },
+        {
+          "month": "2017-03-31",
+          "equity_index": 102.2539
+        },
+        {
+          "month": "2017-04-30",
+          "equity_index": 106.084
+        },
+        {
+          "month": "2017-05-31",
+          "equity_index": 104.1633
+        },
+        {
+          "month": "2017-06-30",
+          "equity_index": 105.4164
+        },
+        {
+          "month": "2017-07-31",
+          "equity_index": 105.8847
+        },
+        {
+          "month": "2017-08-31",
+          "equity_index": 108.74
+        },
+        {
+          "month": "2017-09-30",
+          "equity_index": 112.9331
+        },
+        {
+          "month": "2017-10-31",
+          "equity_index": 126.5354
+        },
+        {
+          "month": "2017-11-30",
+          "equity_index": 132.411
+        },
+        {
+          "month": "2017-12-31",
+          "equity_index": 137.5347
+        },
+        {
+          "month": "2018-01-31",
+          "equity_index": 139.2847
+        },
+        {
+          "month": "2018-02-28",
+          "equity_index": 134.0958
+        },
+        {
+          "month": "2018-03-31",
+          "equity_index": 119.4621
+        },
+        {
+          "month": "2018-04-30",
+          "equity_index": 120.0097
+        },
+        {
+          "month": "2018-05-31",
+          "equity_index": 111.6038
+        },
+        {
+          "month": "2018-06-30",
+          "equity_index": 103.7809
+        },
+        {
+          "month": "2018-07-31",
+          "equity_index": 107.6092
+        },
+        {
+          "month": "2018-08-31",
+          "equity_index": 113.448
+        },
+        {
+          "month": "2018-09-30",
+          "equity_index": 96.4592
+        },
+        {
+          "month": "2018-10-31",
+          "equity_index": 96.7675
+        },
+        {
+          "month": "2018-11-30",
+          "equity_index": 98.0151
+        },
+        {
+          "month": "2018-12-31",
+          "equity_index": 96.5226
+        },
+        {
+          "month": "2019-01-31",
+          "equity_index": 93.4681
+        },
+        {
+          "month": "2019-02-28",
+          "equity_index": 94.0715
+        },
+        {
+          "month": "2019-03-31",
+          "equity_index": 94.0715
+        },
+        {
+          "month": "2019-04-30",
+          "equity_index": 93.2974
+        },
+        {
+          "month": "2019-05-31",
+          "equity_index": 94.9518
+        },
+        {
+          "month": "2019-06-30",
+          "equity_index": 92.7542
+        },
+        {
+          "month": "2019-07-31",
+          "equity_index": 83.6072
+        },
+        {
+          "month": "2019-08-31",
+          "equity_index": 82.6997
+        },
+        {
+          "month": "2019-09-30",
+          "equity_index": 82.6997
+        },
+        {
+          "month": "2019-10-31",
+          "equity_index": 85.82
+        },
+        {
+          "month": "2019-11-30",
+          "equity_index": 83.1506
+        },
+        {
+          "month": "2019-12-31",
+          "equity_index": 84.2765
+        },
+        {
+          "month": "2020-01-31",
+          "equity_index": 87.9917
+        },
+        {
+          "month": "2020-02-29",
+          "equity_index": 85.6624
+        },
+        {
+          "month": "2020-03-31",
+          "equity_index": 86.6522
+        },
+        {
+          "month": "2020-04-30",
+          "equity_index": 86.6522
+        },
+        {
+          "month": "2020-05-31",
+          "equity_index": 86.6522
+        },
+        {
+          "month": "2020-06-30",
+          "equity_index": 86.6522
+        },
+        {
+          "month": "2020-07-31",
+          "equity_index": 86.6522
+        },
+        {
+          "month": "2020-08-31",
+          "equity_index": 97.1412
+        },
+        {
+          "month": "2020-09-30",
+          "equity_index": 103.5647
+        },
+        {
+          "month": "2020-10-31",
+          "equity_index": 103.509
+        },
+        {
+          "month": "2020-11-30",
+          "equity_index": 109.6069
+        },
+        {
+          "month": "2020-12-31",
+          "equity_index": 107.7936
+        },
+        {
+          "month": "2021-01-31",
+          "equity_index": 106.4854
+        },
+        {
+          "month": "2021-02-28",
+          "equity_index": 116.0196
+        },
+        {
+          "month": "2021-03-31",
+          "equity_index": 117.5234
+        },
+        {
+          "month": "2021-04-30",
+          "equity_index": 122.7943
+        },
+        {
+          "month": "2021-05-31",
+          "equity_index": 131.5484
+        },
+        {
+          "month": "2021-06-30",
+          "equity_index": 135.8266
+        },
+        {
+          "month": "2021-07-31",
+          "equity_index": 143.2596
+        },
+        {
+          "month": "2021-08-31",
+          "equity_index": 148.5954
+        },
+        {
+          "month": "2021-09-30",
+          "equity_index": 159.7636
+        },
+        {
+          "month": "2021-10-31",
+          "equity_index": 155.3542
+        },
+        {
+          "month": "2021-11-30",
+          "equity_index": 150.6347
+        },
+        {
+          "month": "2021-12-31",
+          "equity_index": 153.1996
+        },
+        {
+          "month": "2022-01-31",
+          "equity_index": 148.2116
+        },
+        {
+          "month": "2022-02-28",
+          "equity_index": 139.8098
+        },
+        {
+          "month": "2022-03-31",
+          "equity_index": 132.4956
+        },
+        {
+          "month": "2022-04-30",
+          "equity_index": 141.3995
+        },
+        {
+          "month": "2022-05-31",
+          "equity_index": 139.8812
+        },
+        {
+          "month": "2022-06-30",
+          "equity_index": 139.8812
+        },
+        {
+          "month": "2022-07-31",
+          "equity_index": 139.8812
+        },
+        {
+          "month": "2022-08-31",
+          "equity_index": 140.4241
+        },
+        {
+          "month": "2022-09-30",
+          "equity_index": 144.8765
+        },
+        {
+          "month": "2022-10-31",
+          "equity_index": 144.5217
+        },
+        {
+          "month": "2022-11-30",
+          "equity_index": 148.2342
+        },
+        {
+          "month": "2022-12-31",
+          "equity_index": 144.312
+        },
+        {
+          "month": "2023-01-31",
+          "equity_index": 139.1479
+        },
+        {
+          "month": "2023-02-28",
+          "equity_index": 128.1057
+        },
+        {
+          "month": "2023-03-31",
+          "equity_index": 127.7557
+        },
+        {
+          "month": "2023-04-30",
+          "equity_index": 127.7557
+        },
+        {
+          "month": "2023-05-31",
+          "equity_index": 135.2993
+        },
+        {
+          "month": "2023-06-30",
+          "equity_index": 146.2448
+        },
+        {
+          "month": "2023-07-31",
+          "equity_index": 158.6731
+        },
+        {
+          "month": "2023-08-31",
+          "equity_index": 165.1575
+        },
+        {
+          "month": "2023-09-30",
+          "equity_index": 175.1964
+        },
+        {
+          "month": "2023-10-31",
+          "equity_index": 178.0036
+        },
+        {
+          "month": "2023-11-30",
+          "equity_index": 198.0396
+        },
+        {
+          "month": "2023-12-31",
+          "equity_index": 191.4997
+        },
+        {
+          "month": "2024-01-31",
+          "equity_index": 208.9667
+        },
+        {
+          "month": "2024-02-29",
+          "equity_index": 217.0973
+        },
+        {
+          "month": "2024-03-31",
+          "equity_index": 197.6255
+        },
+        {
+          "month": "2024-04-30",
+          "equity_index": 205.1682
+        },
+        {
+          "month": "2024-05-31",
+          "equity_index": 203.0881
+        },
+        {
+          "month": "2024-06-30",
+          "equity_index": 219.0541
+        },
+        {
+          "month": "2024-07-31",
+          "equity_index": 231.4852
+        },
+        {
+          "month": "2024-08-31",
+          "equity_index": 231.2958
+        },
+        {
+          "month": "2024-09-30",
+          "equity_index": 242.4871
+        },
+        {
+          "month": "2024-10-31",
+          "equity_index": 233.5306
+        },
+        {
+          "month": "2024-11-30",
+          "equity_index": 241.2421
+        },
+        {
+          "month": "2024-12-31",
+          "equity_index": 257.7976
+        },
+        {
+          "month": "2025-01-31",
+          "equity_index": 246.8255
+        },
+        {
+          "month": "2025-02-28",
+          "equity_index": 246.8255
+        },
+        {
+          "month": "2025-03-31",
+          "equity_index": 247.7428
+        },
+        {
+          "month": "2025-04-30",
+          "equity_index": 247.676
+        },
+        {
+          "month": "2025-05-31",
+          "equity_index": 285.2147
+        },
+        {
+          "month": "2025-06-30",
+          "equity_index": 288.8595
+        },
+        {
+          "month": "2025-07-31",
+          "equity_index": 287.2563
+        },
+        {
+          "month": "2025-08-31",
+          "equity_index": 283.2013
+        },
+        {
+          "month": "2025-09-30",
+          "equity_index": 272.7928
+        },
+        {
+          "month": "2025-10-31",
+          "equity_index": 279.5083
+        },
+        {
+          "month": "2025-11-30",
+          "equity_index": 290.4684
+        },
+        {
+          "month": "2025-12-31",
+          "equity_index": 298.0648
+        },
+        {
+          "month": "2026-01-31",
+          "equity_index": 283.0039
+        },
+        {
+          "month": "2026-02-28",
+          "equity_index": 306.682
+        },
+        {
+          "month": "2026-03-31",
+          "equity_index": 283.5171
+        },
+        {
+          "month": "2026-04-30",
+          "equity_index": 283.5171
+        },
+        {
+          "month": "2026-05-31",
+          "equity_index": 283.5171
+        },
+        {
+          "month": "2026-06-30",
+          "equity_index": 283.5171
+        },
+        {
+          "month": "2026-07-31",
+          "equity_index": 283.5171
+        },
+        {
+          "month": "2026-08-31",
+          "equity_index": 283.5171
+        },
+        {
+          "month": "2026-09-30",
+          "equity_index": 283.5171
+        },
+        {
+          "month": "2026-10-31",
+          "equity_index": 283.5171
+        }
+      ],
+      "max_dd_monthly_pct": -40.6
+    },
+    {
+      "name": "DHRUVA",
+      "code": "C",
+      "status": "PARKED",
+      "cagr_pct": 13.5,
+      "max_dd_pct": -44.1,
+      "sharpe": 0.7,
+      "positive_months": 76,
+      "months": 141,
+      "best_month": {
+        "month": "2020-04-30",
+        "ret_pct": 15.0
+      },
+      "worst_month": {
+        "month": "2020-03-31",
+        "ret_pct": -21.8
+      },
+      "total_return_pct": 343.0,
+      "curve": [
+        {
+          "month": "2015-02-28",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-03-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-04-30",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-05-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-06-30",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-07-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-08-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-09-30",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-10-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-11-30",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2015-12-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2016-01-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2016-02-29",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2016-03-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2016-04-30",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2016-05-31",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2016-06-30",
+          "equity_index": 100.0
+        },
+        {
+          "month": "2016-07-31",
+          "equity_index": 106.1842
+        },
+        {
+          "month": "2016-08-31",
+          "equity_index": 107.9571
+        },
+        {
+          "month": "2016-09-30",
+          "equity_index": 109.4727
+        },
+        {
+          "month": "2016-10-31",
+          "equity_index": 113.0617
+        },
+        {
+          "month": "2016-11-30",
+          "equity_index": 102.1261
+        },
+        {
+          "month": "2016-12-31",
+          "equity_index": 99.5828
+        },
+        {
+          "month": "2017-01-31",
+          "equity_index": 108.6033
+        },
+        {
+          "month": "2017-02-28",
+          "equity_index": 113.8345
+        },
+        {
+          "month": "2017-03-31",
+          "equity_index": 117.2694
+        },
+        {
+          "month": "2017-04-30",
+          "equity_index": 121.6641
+        },
+        {
+          "month": "2017-05-31",
+          "equity_index": 120.3117
+        },
+        {
+          "month": "2017-06-30",
+          "equity_index": 119.6441
+        },
+        {
+          "month": "2017-07-31",
+          "equity_index": 124.0434
+        },
+        {
+          "month": "2017-08-31",
+          "equity_index": 128.5925
+        },
+        {
+          "month": "2017-09-30",
+          "equity_index": 130.3772
+        },
+        {
+          "month": "2017-10-31",
+          "equity_index": 140.2409
+        },
+        {
+          "month": "2017-11-30",
+          "equity_index": 144.0468
+        },
+        {
+          "month": "2017-12-31",
+          "equity_index": 149.8385
+        },
+        {
+          "month": "2018-01-31",
+          "equity_index": 144.2255
+        },
+        {
+          "month": "2018-02-28",
+          "equity_index": 135.3789
+        },
+        {
+          "month": "2018-03-31",
+          "equity_index": 131.0383
+        },
+        {
+          "month": "2018-04-30",
+          "equity_index": 139.3688
+        },
+        {
+          "month": "2018-05-31",
+          "equity_index": 135.3944
+        },
+        {
+          "month": "2018-06-30",
+          "equity_index": 131.4036
+        },
+        {
+          "month": "2018-07-31",
+          "equity_index": 140.5453
+        },
+        {
+          "month": "2018-08-31",
+          "equity_index": 148.2289
+        },
+        {
+          "month": "2018-09-30",
+          "equity_index": 128.5733
+        },
+        {
+          "month": "2018-10-31",
+          "equity_index": 125.2467
+        },
+        {
+          "month": "2018-11-30",
+          "equity_index": 129.4322
+        },
+        {
+          "month": "2018-12-31",
+          "equity_index": 128.224
+        },
+        {
+          "month": "2019-01-31",
+          "equity_index": 125.737
+        },
+        {
+          "month": "2019-02-28",
+          "equity_index": 125.7161
+        },
+        {
+          "month": "2019-03-31",
+          "equity_index": 129.0385
+        },
+        {
+          "month": "2019-04-30",
+          "equity_index": 128.4972
+        },
+        {
+          "month": "2019-05-31",
+          "equity_index": 127.7666
+        },
+        {
+          "month": "2019-06-30",
+          "equity_index": 127.3744
+        },
+        {
+          "month": "2019-07-31",
+          "equity_index": 114.4699
+        },
+        {
+          "month": "2019-08-31",
+          "equity_index": 116.0234
+        },
+        {
+          "month": "2019-09-30",
+          "equity_index": 122.592
+        },
+        {
+          "month": "2019-10-31",
+          "equity_index": 127.8448
+        },
+        {
+          "month": "2019-11-30",
+          "equity_index": 126.6186
+        },
+        {
+          "month": "2019-12-31",
+          "equity_index": 130.2495
+        },
+        {
+          "month": "2020-01-31",
+          "equity_index": 135.9623
+        },
+        {
+          "month": "2020-02-29",
+          "equity_index": 129.2207
+        },
+        {
+          "month": "2020-03-31",
+          "equity_index": 101.0959
+        },
+        {
+          "month": "2020-04-30",
+          "equity_index": 116.2521
+        },
+        {
+          "month": "2020-05-31",
+          "equity_index": 115.7847
+        },
+        {
+          "month": "2020-06-30",
+          "equity_index": 127.4122
+        },
+        {
+          "month": "2020-07-31",
+          "equity_index": 141.7909
+        },
+        {
+          "month": "2020-08-31",
+          "equity_index": 147.614
+        },
+        {
+          "month": "2020-09-30",
+          "equity_index": 164.3865
+        },
+        {
+          "month": "2020-10-31",
+          "equity_index": 167.1452
+        },
+        {
+          "month": "2020-11-30",
+          "equity_index": 186.7279
+        },
+        {
+          "month": "2020-12-31",
+          "equity_index": 191.179
+        },
+        {
+          "month": "2021-01-31",
+          "equity_index": 188.0181
+        },
+        {
+          "month": "2021-02-28",
+          "equity_index": 213.721
+        },
+        {
+          "month": "2021-03-31",
+          "equity_index": 218.6724
+        },
+        {
+          "month": "2021-04-30",
+          "equity_index": 238.2868
+        },
+        {
+          "month": "2021-05-31",
+          "equity_index": 254.0191
+        },
+        {
+          "month": "2021-06-30",
+          "equity_index": 271.5138
+        },
+        {
+          "month": "2021-07-31",
+          "equity_index": 281.5711
+        },
+        {
+          "month": "2021-08-31",
+          "equity_index": 289.1276
+        },
+        {
+          "month": "2021-09-30",
+          "equity_index": 290.9285
+        },
+        {
+          "month": "2021-10-31",
+          "equity_index": 290.3599
+        },
+        {
+          "month": "2021-11-30",
+          "equity_index": 297.2665
+        },
+        {
+          "month": "2021-12-31",
+          "equity_index": 318.0561
+        },
+        {
+          "month": "2022-01-31",
+          "equity_index": 298.4683
+        },
+        {
+          "month": "2022-02-28",
+          "equity_index": 276.7852
+        },
+        {
+          "month": "2022-03-31",
+          "equity_index": 309.1765
+        },
+        {
+          "month": "2022-04-30",
+          "equity_index": 295.5798
+        },
+        {
+          "month": "2022-05-31",
+          "equity_index": 274.3604
+        },
+        {
+          "month": "2022-06-30",
+          "equity_index": 250.2105
+        },
+        {
+          "month": "2022-07-31",
+          "equity_index": 272.2469
+        },
+        {
+          "month": "2022-08-31",
+          "equity_index": 288.009
+        },
+        {
+          "month": "2022-09-30",
+          "equity_index": 292.2137
+        },
+        {
+          "month": "2022-10-31",
+          "equity_index": 291.2399
+        },
+        {
+          "month": "2022-11-30",
+          "equity_index": 304.4429
+        },
+        {
+          "month": "2022-12-31",
+          "equity_index": 291.0899
+        },
+        {
+          "month": "2023-01-31",
+          "equity_index": 270.3049
+        },
+        {
+          "month": "2023-02-28",
+          "equity_index": 229.706
+        },
+        {
+          "month": "2023-03-31",
+          "equity_index": 237.0881
+        },
+        {
+          "month": "2023-04-30",
+          "equity_index": 271.7959
+        },
+        {
+          "month": "2023-05-31",
+          "equity_index": 282.3947
+        },
+        {
+          "month": "2023-06-30",
+          "equity_index": 305.2766
+        },
+        {
+          "month": "2023-07-31",
+          "equity_index": 332.3383
+        },
+        {
+          "month": "2023-08-31",
+          "equity_index": 332.8979
+        },
+        {
+          "month": "2023-09-30",
+          "equity_index": 351.8277
+        },
+        {
+          "month": "2023-10-31",
+          "equity_index": 342.0819
+        },
+        {
+          "month": "2023-11-30",
+          "equity_index": 375.8423
+        },
+        {
+          "month": "2023-12-31",
+          "equity_index": 411.2932
+        },
+        {
+          "month": "2024-01-31",
+          "equity_index": 416.5859
+        },
+        {
+          "month": "2024-02-29",
+          "equity_index": 414.9403
+        },
+        {
+          "month": "2024-03-31",
+          "equity_index": 417.5768
+        },
+        {
+          "month": "2024-04-30",
+          "equity_index": 458.935
+        },
+        {
+          "month": "2024-05-31",
+          "equity_index": 475.3103
+        },
+        {
+          "month": "2024-06-30",
+          "equity_index": 490.5002
+        },
+        {
+          "month": "2024-07-31",
+          "equity_index": 500.5861
+        },
+        {
+          "month": "2024-08-31",
+          "equity_index": 489.7963
+        },
+        {
+          "month": "2024-09-30",
+          "equity_index": 494.0105
+        },
+        {
+          "month": "2024-10-31",
+          "equity_index": 464.1893
+        },
+        {
+          "month": "2024-11-30",
+          "equity_index": 474.6042
+        },
+        {
+          "month": "2024-12-31",
+          "equity_index": 470.0435
+        },
+        {
+          "month": "2025-01-31",
+          "equity_index": 385.2068
+        },
+        {
+          "month": "2025-02-28",
+          "equity_index": 338.0929
+        },
+        {
+          "month": "2025-03-31",
+          "equity_index": 375.8068
+        },
+        {
+          "month": "2025-04-30",
+          "equity_index": 385.7749
+        },
+        {
+          "month": "2025-05-31",
+          "equity_index": 410.9374
+        },
+        {
+          "month": "2025-06-30",
+          "equity_index": 431.7271
+        },
+        {
+          "month": "2025-07-31",
+          "equity_index": 404.3161
+        },
+        {
+          "month": "2025-08-31",
+          "equity_index": 399.8682
+        },
+        {
+          "month": "2025-09-30",
+          "equity_index": 405.5186
+        },
+        {
+          "month": "2025-10-31",
+          "equity_index": 433.5645
+        },
+        {
+          "month": "2025-11-30",
+          "equity_index": 451.422
+        },
+        {
+          "month": "2025-12-31",
+          "equity_index": 447.6708
+        },
+        {
+          "month": "2026-01-31",
+          "equity_index": 440.422
+        },
+        {
+          "month": "2026-02-28",
+          "equity_index": 458.6161
+        },
+        {
+          "month": "2026-03-31",
+          "equity_index": 382.5706
+        },
+        {
+          "month": "2026-04-30",
+          "equity_index": 429.3181
+        },
+        {
+          "month": "2026-05-31",
+          "equity_index": 441.6303
+        },
+        {
+          "month": "2026-06-30",
+          "equity_index": 453.8864
+        },
+        {
+          "month": "2026-07-31",
+          "equity_index": 451.1984
+        },
+        {
+          "month": "2026-08-31",
+          "equity_index": 489.1766
+        },
+        {
+          "month": "2026-09-30",
+          "equity_index": 469.5649
+        },
+        {
+          "month": "2026-10-31",
+          "equity_index": 442.9583
+        }
+      ],
+      "max_dd_monthly_pct": -32.5
+    }
+  ],
+  "recent_months": [
+    {
+      "month": "2025-11-30",
+      "chakra_pct": 3.9,
+      "dhruva_pct": 4.1
+    },
+    {
+      "month": "2025-12-31",
+      "chakra_pct": 2.6,
+      "dhruva_pct": -0.8
+    },
+    {
+      "month": "2026-01-31",
+      "chakra_pct": -5.1,
+      "dhruva_pct": -1.6
+    },
+    {
+      "month": "2026-02-28",
+      "chakra_pct": 8.4,
+      "dhruva_pct": 4.1
+    },
+    {
+      "month": "2026-03-31",
+      "chakra_pct": -7.6,
+      "dhruva_pct": -16.6
+    },
+    {
+      "month": "2026-04-30",
+      "chakra_pct": 0.0,
+      "dhruva_pct": 12.2
+    },
+    {
+      "month": "2026-05-31",
+      "chakra_pct": 0.0,
+      "dhruva_pct": 2.9
+    },
+    {
+      "month": "2026-06-30",
+      "chakra_pct": 0.0,
+      "dhruva_pct": 2.8
+    },
+    {
+      "month": "2026-07-31",
+      "chakra_pct": 0.0,
+      "dhruva_pct": -0.6
+    },
+    {
+      "month": "2026-08-31",
+      "chakra_pct": 0.0,
+      "dhruva_pct": 8.4
+    },
+    {
+      "month": "2026-09-30",
+      "chakra_pct": 0.0,
+      "dhruva_pct": -4.0
+    },
+    {
+      "month": "2026-10-31",
+      "chakra_pct": 0.0,
+      "dhruva_pct": -5.7
+    }
+  ]
+}

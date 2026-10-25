@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import type { PageId } from '../types'
 import { useApp } from '../lib/store'
+import { useLive } from '../lib/live'
 import { DATA_MODE, MARKET_STATUS } from '../data/market'
 import { StatusDot } from './ui'
 
@@ -191,6 +192,7 @@ export function Topbar({
   onSystem: () => void
 }) {
   const clock = useClock()
+  const live = useLive()
   return (
     <header className="topbar">
       <div className="topbar-left">
@@ -204,7 +206,8 @@ export function Topbar({
         </div>
         <div className="topbar-status">
           <span className="status-pill paper">
-            <StatusDot tone="good" /> {DATA_MODE === 'DEMO_FIXTURE' ? 'Demo' : 'Live'}
+            <StatusDot tone={live.status === 'ok' ? 'good' : 'warn'} />{' '}
+            {live.status === 'ok' ? 'Live account' : live.status === 'error' ? 'Demo (live.json unreachable)' : 'Loading…'}
           </span>
           <span className="status-pill hide-mobile">{MARKET_STATUS === 'CLOSED' ? 'NSE closed' : 'NSE open'}</span>
           <span className="status-pill hide-tablet">{clock} IST</span>
@@ -306,12 +309,36 @@ export function DemoBanner({ onSystem }: { onSystem: () => void }) {
     <div className="demo-banner" role="status">
       <ShieldCheck />
       <span>
-        <strong>Demonstration environment.</strong> Account, scanner, research and execution values are labelled
-        fixtures — no live Kite session, engine database or market feed is connected.
+        <strong>Demo panels are clearly labelled.</strong> Account capital, system curves and recent months on the
+        overview are live — scanner, journal, orders, research and execution values are labelled fixtures with no live
+        Kite session, engine feed or market data.
       </span>
       <button type="button" className="demo-banner-link" onClick={onSystem}>
         Inspect system
       </button>
+    </div>
+  )
+}
+
+export function LiveFooter() {
+  const live = useLive()
+  if (live.status === 'loading') return null
+  if (live.status === 'error') {
+    return (
+      <div
+        className="mono"
+        role="status"
+        style={{ margin: '13px 0 4px', color: 'var(--amber)', fontSize: 8, textAlign: 'center' }}
+      >
+        ⚠ live.json unreachable ({live.error}) — showing demo data until the export loads
+      </div>
+    )
+  }
+  const { data } = live
+  return (
+    <div className="mono" style={{ margin: '13px 0 4px', color: 'var(--muted-dim)', fontSize: 8, textAlign: 'center' }}>
+      Live data · as of {data.data_asof} · updated {data.generated_at}
+      {DATA_MODE === 'DEMO_FIXTURE' ? ' · interactive panels run on the local demo ledger' : ''}
     </div>
   )
 }

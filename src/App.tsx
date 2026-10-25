@@ -6,6 +6,7 @@ import { SIGNALS } from './data/market'
 import { Button } from './components/ui'
 import {
   CommandPalette,
+  LiveFooter,
   MobileNav,
   Sidebar,
   ToastHost,
@@ -179,6 +180,7 @@ export default function App() {
         <main className="page-wrap" id="main-content">
           {content}
         </main>
+        <LiveFooter />
       </div>
       <MobileNav active={page} navigate={navigate} moreOpen={moreOpen} setMoreOpen={setMoreOpen} />
       {selectedSignal ? <SignalDetailDrawer signal={selectedSignal} onClose={() => setSelectedSignal(null)} /> : null}
