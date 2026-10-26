@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-26T08:19:04Z",
+  "generated_at": "2026-10-26T08:24:13Z",
   "data_asof": "2026-10-23",
   "mode": "REAL",
   "account": {
@@ -8,10 +8,10 @@
     "holdings": [],
     "n_positions": 3,
     "cost_basis": 6619.35,
-    "unrealized_pnl": -140.95,
-    "return_pct": -2.13,
-    "equity": 6859.05,
-    "prices_asof": "2026-10-23",
+    "unrealized_pnl": 15.95,
+    "return_pct": 0.24,
+    "equity": 7015.95,
+    "prices_asof": "Kite live 15:05 IST",
     "capital_floor": 45000,
     "floor_status": "below",
     "capital_plan_note": "Rebuilding toward Rs 45,000 floor: Rs 15,000 slots, flexible monthly deposits before month-end decision"

@@ -301,7 +301,7 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
               </div>
               {priceDate ? (
                 <p style={{ color: 'var(--muted)', fontSize: 9.5, margin: '8px 0 0', lineHeight: 1.6 }}>
-                  Prices at NSE close {priceDate}
+                  Prices as of {priceDate}
                 </p>
               ) : null}
             </>
