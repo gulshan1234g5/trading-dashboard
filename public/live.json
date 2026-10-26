@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-10-26T05:45:35Z",
+  "generated_at": "2026-10-26T05:49:20Z",
   "data_asof": "2026-10-23",
   "mode": "REAL",
   "account": {
     "broker": "ZERODHA",
-    "cash": 3000.0,
+    "cash": 7000.0,
     "holdings": [],
     "n_positions": 0,
-    "equity": 3000.0,
+    "equity": 7000.0,
     "capital_floor": 45000,
     "floor_status": "below",
     "capital_plan_note": "Rebuilding toward Rs 45,000 floor: Rs 15,000 slots, flexible monthly deposits before month-end decision"
