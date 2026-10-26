@@ -10,13 +10,16 @@ python3 /root/rlt/scripts/export_dashboard.py --out "$(pwd)/public/live.json"
 # last deployed snapshot. generated_at is stamped fresh by export_dashboard on
 # every run, so it is excluded before hashing — otherwise the guard never fires.
 # Pass "force" to bypass (bash deploy.sh force).
-hash=$(python3 - public/live.json <<'PY'
+datahash=$(python3 - public/live.json <<'PY'
 import sys, json, hashlib
 d = json.load(open(sys.argv[1]))
 d.pop("generated_at", None)
 print(hashlib.sha256(json.dumps(d, sort_keys=True).encode()).hexdigest())
 PY
 )
+# source fingerprint: UI code changes must deploy even when live.json is unchanged
+codefp=$(find src public index.html vite.config.ts package.json -type f 2>/dev/null | sort | xargs sha256sum 2>/dev/null | sha256sum | cut -c1-64)
+hash=$(printf '%s %s\n' "$datahash" "$codefp" | sha256sum | cut -d' ' -f1)
 if [ -f .live_deployed_hash ] && [ "$(cat .live_deployed_hash)" = "$hash" ] && [ "${1:-}" != "force" ]; then
     echo "no data change since last deploy - skipping"
     exit 0

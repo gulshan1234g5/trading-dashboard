@@ -112,6 +112,7 @@ export function SystemsChart({ systems }: { systems: LiveSystem[] }) {
           role="img"
           aria-label="CHAKRA and DHRUVA system equity index curves, base 100"
           onPointerMove={onPointerMove}
+          onPointerDown={onPointerMove}
           onPointerLeave={() => setHover(null)}
         >
           <defs>

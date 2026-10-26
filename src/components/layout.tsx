@@ -85,7 +85,7 @@ export function Sidebar({ active, navigate }: { active: PageId; navigate: (page:
             <div className="desk-title">Swing Desk</div>
             <div className="desk-meta">NSE · INDIA · INR</div>
           </div>
-          <span className="status-pill paper">Paper</span>
+          <span className="status-pill paper">Live</span>
         </div>
       </div>
 
@@ -129,7 +129,7 @@ export function Sidebar({ active, navigate }: { active: PageId; navigate: (page:
           <div className="avatar">GT</div>
           <div style={{ minWidth: 0, flex: 1 }}>
             <div className="user-name">Gulshan Toppo</div>
-            <div className="user-role">Operator · Paper account</div>
+            <div className="user-role">Operator · Live account</div>
           </div>
           <Zap size={12} color="#c7f36b" aria-hidden="true" />
         </div>

@@ -1,6 +1,6 @@
 import { LineChart } from 'lucide-react'
 import { useLive } from '../lib/live'
-import { pct } from '../lib/format'
+import { inr, pct } from '../lib/format'
 import { EmptyState, PageHeader, Pill } from '../components/ui'
 import { SystemsChart } from '../components/charts'
 
@@ -9,6 +9,18 @@ function monthLabel(iso: string): string {
 }
 
 const SYSTEM_COLORS: Record<string, string> = { CHAKRA: '#c7f36b', DHRUVA: '#63e6be' }
+
+// Frozen allocation ladder (switch rule card). Hard thresholds: DHRUVA wakes at
+// ₹4.5L capital, 50/50 split from ₹9L — see the switch-rule card on this page.
+const LADDER = [
+  { range: '< ₹4.5L', alloc: 'CHAKRA only' },
+  { range: '₹4.5L – ₹9L', alloc: 'CHAKRA only' },
+  { range: '≥ ₹9L', alloc: '50 / 50 both systems' },
+]
+
+function activeLadderRow(equity: number): number {
+  return equity < 450_000 ? 0 : equity < 900_000 ? 1 : 2
+}
 
 export function Systems() {
   const live = useLive()
@@ -73,7 +85,9 @@ export function Systems() {
                     </div>
                   </div>
                   <div style={{ color: 'var(--muted-dim)', fontSize: 8.5, marginTop: 8, fontFamily: 'var(--font-mono)' }}>
-                    {system.status === 'PARKED' ? 'Parked · activates at ₹4.5L capital' : 'Live allocation'}
+                    {system.status === 'PARKED'
+                      ? `Parked · activates at ₹4.5L capital — see switch rule below${system.name === 'DHRUVA' && live.data.account.equity < 450_000 ? ` · now ${inr(live.data.account.equity)}` : ''}`
+                      : 'Live allocation'}
                   </div>
                 </div>
               )
@@ -115,21 +129,21 @@ export function Systems() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>{'< ₹4.5L'}</td>
-                      <td>CHAKRA only</td>
-                    </tr>
-                    <tr>
-                      <td>₹4.5L – ₹9L</td>
-                      <td>CHAKRA only</td>
-                    </tr>
-                    <tr>
-                      <td>{'≥ ₹9L'}</td>
-                      <td>50 / 50 both systems</td>
-                    </tr>
+                    {LADDER.map((rung, index) => (
+                      <tr key={rung.range} className={index === activeLadderRow(live.data.account.equity) ? 'sw-active' : undefined}>
+                        <td>{rung.range}</td>
+                        <td>
+                          {rung.alloc}
+                          {index === activeLadderRow(live.data.account.equity) ? <Pill tone="lime" className="sw-current">Now</Pill> : null}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
+              <p style={{ color: 'var(--muted-dim)', fontSize: 8.5, margin: '8px 17px 0' }}>
+                Account equity today {inr(live.data.account.equity)} — the marked row applies. CHAKRA stays the only allocation until ₹9L.
+              </p>
             </div>
 
             <div className="card">

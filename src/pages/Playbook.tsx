@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { CheckSquare, Square } from 'lucide-react'
 import { useLive } from '../lib/live'
+import { inr } from '../lib/format'
 import { PageHeader, Pill } from '../components/ui'
 
 // Verbatim from /root/rlt/RUNBOOK.md (frozen 2026-10-22) and reports/live/state.json
@@ -91,6 +92,7 @@ const CHECK_KEY = 'gulshan-playbook-checks'
 export function Playbook() {
   const live = useLive()
   const gate = live.status === 'ok' ? live.data.gate : null
+  const account = live.status === 'ok' ? live.data.account : null
   // Checks are keyed to the next decision date so they reset each month.
   const target = gate?.next_decision ?? ''
   const [done, setDone] = useState<string[]>(() => {
@@ -149,6 +151,22 @@ export function Playbook() {
               <strong>
                 Nifty {gate.nifty_close.toLocaleString('en-IN', { minimumFractionDigits: 2 })} vs 200-DMA{' '}
                 {gate.dma200.toLocaleString('en-IN', { minimumFractionDigits: 2 })} ({gate.gap_pct.toFixed(2)}%)
+              </strong>
+            </div>
+          </div>
+        ) : null}
+        {account ? (
+          <div className="budget-row">
+            <div className="budget-labels">
+              <span>Equity vs healthy floor</span>
+              <strong className={account.floor_status === 'below' ? 'neg' : 'pos'}>
+                {inr(account.equity)} of {inr(account.capital_floor)}
+              </strong>
+            </div>
+            <div className="budget-labels">
+              <span>Top-up to the ₹22,500 hard floor</span>
+              <strong className={account.equity < 22_500 ? 'neg' : undefined}>
+                {inr(Math.max(0, 22_500 - account.equity))}
               </strong>
             </div>
           </div>

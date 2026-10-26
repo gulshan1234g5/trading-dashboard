@@ -50,6 +50,15 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
                 : 'Fetching live snapshot…'}
             </span>
           </div>
+          {account ? (
+            <div style={{ marginTop: 12 }}>
+              <div className="budget-labels">
+                <span>Floor progress</span>
+                <strong className={account.floor_status === 'below' ? 'neg' : 'pos'}>{Math.round(floorPct)}%</strong>
+              </div>
+              <ProgressBar value={floorPct} tone={floorPct >= 100 ? 'lime' : 'amber'} />
+            </div>
+          ) : null}
         </div>
         <div className="card kpi-card">
           <div className="kpi-label">
@@ -77,7 +86,7 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
           </div>
           <div className="kpi-value">{gate ? pct(gate.gap_pct) : '—'}</div>
           <div className="kpi-delta">
-            <span className="chip">NIFTY vs 200-DMA</span>
+            <span className="chip">NIFTY vs 200-DMA{gate ? (gate.mode === 'off' ? ' · off' : '') : ''}</span>
             <span>{gate ? `next decision ${gate.next_decision}` : ''}</span>
           </div>
         </div>
@@ -87,10 +96,25 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
         <div className="budget-row">
           <div className="budget-labels">
             <span>Capital floor</span>
-            <strong>{account ? `${inr(account.equity)} of ${inr(account.capital_floor)}` : '—'}</strong>
+            <strong className={account && account.floor_status === 'below' ? 'neg' : 'pos'}>
+              {account ? `${inr(account.equity)} of ${inr(account.capital_floor)}` : '—'}
+            </strong>
+          </div>
+          <div className="progress-wrap" style={{ marginTop: 4 }}>
+            <ProgressBar value={floorPct} tone={floorPct >= 100 ? 'lime' : 'amber'} />
+            {account ? (
+              <span
+                className="progress-tick"
+                style={{ left: `${(HARD_FLOOR / account.capital_floor) * 100}%` }}
+                aria-hidden="true"
+              />
+            ) : null}
+          </div>
+          <div className="budget-labels" style={{ marginTop: 5 }}>
+            <span>▍ hard floor {inr(HARD_FLOOR)}</span>
+            <strong>{gate ? `next decision ${gate.next_decision}` : ''}</strong>
           </div>
         </div>
-        <ProgressBar value={floorPct} tone={floorPct >= 100 ? 'lime' : 'amber'} />
         <p style={{ color: 'var(--muted)', fontSize: 9.5, margin: '8px 0 0', lineHeight: 1.6 }}>
           Below {account ? inr(account.capital_floor) : '₹45,000'} the ₹15.34/slot DP charge breaks the modelled 0.22%
           round-trip cost. Hard floor {inr(HARD_FLOOR)}{gate?.mode === 'off' ? ' · gate disabled (override) — buy lists print every month-end, the floor is the only brake' : ' — below it, skip the month and keep depositing'}.

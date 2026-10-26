@@ -117,7 +117,7 @@ export default function App() {
             </Button>
           </form>
           <div className="lock-foot">
-            <span><ShieldCheck size={11} /> Paper mode only</span>
+            <span><ShieldCheck size={11} /> Read-only UI</span>
             <span className="mono">NO BROKER SESSION</span>
           </div>
         </div>
