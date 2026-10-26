@@ -5,6 +5,16 @@ set -e
 cd "$(dirname "$0")"
 # refresh live.json from the real engine output before every deploy
 python3 /root/rlt/scripts/export_dashboard.py --out "$(pwd)/public/live.json"
+
+# No-change guard: skip the build+push when the live data is identical to the
+# last deployed snapshot. Pass "force" to bypass (bash deploy.sh force).
+hash=$(sha256sum public/live.json | cut -d' ' -f1)
+if [ -f .live_deployed_hash ] && [ "$(cat .live_deployed_hash)" = "$hash" ] && [ "${1:-}" != "force" ]; then
+    echo "no data change since last deploy - skipping"
+    exit 0
+fi
+echo "$hash" > .live_deployed_hash
+
 npx vite build --base=/trading-dashboard/ --outDir dist
 tmp=$(mktemp -d)
 cp -r dist/. "$tmp"/
