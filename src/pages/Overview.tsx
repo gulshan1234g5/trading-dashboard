@@ -67,11 +67,11 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
         </div>
         <div className="card kpi-card">
           <div className="kpi-label">
-            <CircleDollarSign /> Free cash
+            <CircleDollarSign /> Deposited
           </div>
-          <div className="kpi-value">{account ? inr(account.cash) : '—'}</div>
+          <div className="kpi-value">{account && account.deposited_total != null ? inr(account.deposited_total) : '—'}</div>
           <div className="kpi-delta">
-            <span className="chip">settled &amp; available</span>
+            <span className="chip">{account?.started_on ? `since ${account.started_on}` : 'total pay-ins'}</span>
             <span>{account ? account.capital_plan_note : ''}</span>
           </div>
         </div>
@@ -291,6 +291,30 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
               <p>{account ? `${account.n_positions} live holdings · individual positions kept private` : 'loading portfolio P&L'}</p>
             </div>
           </div>
+          {account && account.deposited_total != null ? (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'baseline', fontSize: 10.5, color: 'var(--muted)', marginTop: 4 }} aria-label="Growth journey">
+              <span>
+                Started {inr(0)} on {account.started_on}
+              </span>
+              <span aria-hidden="true">→</span>
+              <span>
+                Deposited <strong>{inr(account.deposited_total)}</strong>
+              </span>
+              <span aria-hidden="true">→</span>
+              <span>
+                Now <strong>{inr(account.equity)}</strong>
+              </span>
+              <span aria-hidden="true">→</span>
+              <span>
+                Growth{' '}
+                <strong className={pnlCls(account.growth ?? 0)}>
+                  {(account.growth ?? 0) > 0 ? '+' : ''}
+                  {inr(account.growth ?? 0)}
+                </strong>{' '}
+                ({pct(account.growth_pct ?? 0)})
+              </span>
+            </div>
+          ) : null}
           {account && account.n_positions > 0 ? (
             <>
               <div className={pnlCls(unrealized)} style={{ fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em' }}>
@@ -310,7 +334,7 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
               <EmptyState
                 icon={<BriefcaseBusiness />}
                 title={account ? 'No open positions' : 'Loading portfolio…'}
-                text={account ? 'The live account is fully flat — the regime gate is out of the market, so cash is the position.' : 'Fetching portfolio P&L.'}
+                text={account ? 'Live account summary — positions stay private by design.' : 'Fetching portfolio P&L.'}
               />
             </div>
           )}

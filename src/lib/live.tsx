@@ -33,7 +33,13 @@ export interface LiveSnapshot {
   mode: 'REAL'
   account: {
     broker: string
-    cash: number
+    /** optional: cash was removed from public exports (no-cash-display rule) */
+    cash?: number
+    /** optional: growth journey fields (new exports) */
+    deposited_total?: number
+    started_on?: string
+    growth?: number
+    growth_pct?: number
     holdings: Array<{
       /** optional: new exports are aggregate-only (rows never emitted) */
       symbol?: string
@@ -86,11 +92,13 @@ export function parseLive(raw: any): LiveSnapshot | null {
   const a = raw.account
   if (a === null || typeof a !== 'object') return null
   if (typeof a.broker !== 'string') return null
-  if (typeof a.cash !== 'number' || typeof a.equity !== 'number' || typeof a.n_positions !== 'number') return null
+  if (typeof a.equity !== 'number' || typeof a.n_positions !== 'number') return null
   if (typeof a.capital_floor !== 'number') return null
   if (a.floor_status !== 'below' && a.floor_status !== 'at_or_above') return null
   if (typeof a.capital_plan_note !== 'string') return null
   const optNum = (v: unknown) => v === undefined || typeof v === 'number'
+  if (!optNum(a.deposited_total)) return null
+  if (a.started_on !== undefined && typeof a.started_on !== 'string') return null
   if (a.unrealized_pnl !== undefined && typeof a.unrealized_pnl !== 'number') return null
   if (!Array.isArray(a.holdings)) return null
   for (const h of a.holdings) {

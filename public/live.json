@@ -1,10 +1,13 @@
 {
-  "generated_at": "2026-10-26T08:24:13Z",
+  "generated_at": "2026-10-26T09:08:45Z",
   "data_asof": "2026-10-23",
   "mode": "REAL",
   "account": {
     "broker": "ZERODHA",
-    "cash": 380.65,
+    "deposited_total": 7000.0,
+    "started_on": "2026-10-23",
+    "growth": 15.95,
+    "growth_pct": 0.23,
     "holdings": [],
     "n_positions": 3,
     "cost_basis": 6619.35,
