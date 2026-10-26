@@ -62,12 +62,12 @@ const STEPS: Step[] = [
   },
   {
     id: 'off',
-    title: 'Filter OFF → nothing happens',
-    body: <>Money stays in the bank (idle Zerodha cash earns 0%). No orders, no substitutions, no exceptions.</>,
+    title: 'Gate disabled — every decision prints a buy list',
+    body: <>SPEC_GATE_OFF_LIVE: the Nifty-200DMA gate no longer blocks entries at any level. The remaining brake is the capital floor — do <strong>not</strong> execute below ₹22,500 hard / ₹45,000 healthy equity.</>,
   },
   {
     id: 'on',
-    title: 'Filter ON → deposit the same evening, place orders next session',
+    title: 'Deposit the same evening, place orders next session',
     body: (
       <>
         Deposit the month&#39;s amount by UPI that evening. Next session at 09:15, place CNC <strong>market</strong>{' '}
@@ -126,7 +126,7 @@ export function Playbook() {
             <div className="card-title-row">
               <h2 className="card-title">Next decision</h2>
               {gate ? (
-                <Pill tone={gate.filter === 'ON' ? 'lime' : 'amber'}>Filter {gate.filter}</Pill>
+                <Pill tone={gate.mode === 'off' ? 'neutral' : gate.filter === 'ON' ? 'lime' : 'amber'}>{gate.mode === 'off' ? 'Gate disabled' : `Filter ${gate.filter}`}</Pill>
               ) : (
                 <Pill tone="amber">Loading</Pill>
               )}

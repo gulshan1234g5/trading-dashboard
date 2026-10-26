@@ -73,7 +73,7 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
         </div>
         <div className="card kpi-card">
           <div className="kpi-label">
-            <ShieldAlert /> Market gate {gate ? <Pill tone={gate.filter === 'ON' ? 'lime' : 'amber'}>{gate.filter === 'ON' ? 'In market' : 'Out of market'}</Pill> : null}
+            <ShieldAlert /> Market gate {gate ? <Pill tone={gate.mode === 'off' ? 'neutral' : gate.filter === 'ON' ? 'lime' : 'amber'}>{gate.mode === 'off' ? 'Disabled' : gate.filter === 'ON' ? 'In market' : 'Out of market'}</Pill> : null}
           </div>
           <div className="kpi-value">{gate ? pct(gate.gap_pct) : '—'}</div>
           <div className="kpi-delta">
@@ -93,7 +93,7 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
         <ProgressBar value={floorPct} tone={floorPct >= 100 ? 'lime' : 'amber'} />
         <p style={{ color: 'var(--muted)', fontSize: 9.5, margin: '8px 0 0', lineHeight: 1.6 }}>
           Below {account ? inr(account.capital_floor) : '₹45,000'} the ₹15.34/slot DP charge breaks the modelled 0.22%
-          round-trip cost. Hard floor {inr(HARD_FLOOR)}{gate?.filter === 'OFF' ? ' · gate is OFF, nothing to do, ever' : ' — below it, skip the month and keep depositing'}.
+          round-trip cost. Hard floor {inr(HARD_FLOOR)}{gate?.mode === 'off' ? ' · gate disabled (override) — buy lists print every month-end, the floor is the only brake' : ' — below it, skip the month and keep depositing'}.
         </p>
       </section>
 
@@ -178,9 +178,9 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
                   <ShieldCheck className="icon-inline" />
                   <h2 className="card-title">Regime gate</h2>
                 </div>
-                <p className="card-sub">200-DMA filter · monthly decision cycle</p>
+                <p className="card-sub">{gate?.mode === 'off' ? '200-DMA filter disabled · user override (SPEC_GATE_OFF_LIVE)' : '200-DMA filter · monthly decision cycle'}</p>
               </div>
-              {gate ? <Pill tone={gate.filter === 'ON' ? 'lime' : 'amber'}>Filter {gate.filter}</Pill> : <Pill tone="amber">Loading</Pill>}
+              {gate ? <Pill tone={gate.mode === 'off' ? 'neutral' : gate.filter === 'ON' ? 'lime' : 'amber'}>{gate.mode === 'off' ? 'Gate disabled' : `Filter ${gate.filter}`}</Pill> : <Pill tone="amber">Loading</Pill>}
             </div>
             {gate ? (
               <>

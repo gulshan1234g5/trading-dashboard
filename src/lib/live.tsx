@@ -43,6 +43,7 @@ export interface LiveSnapshot {
   }
   gate: {
     filter: 'ON' | 'OFF'
+    mode?: 'on' | 'off'
     nifty_close: number
     dma200: number
     gap_pct: number

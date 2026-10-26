@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-26T05:49:20Z",
+  "generated_at": "2026-10-26T05:57:26Z",
   "data_asof": "2026-10-23",
   "mode": "REAL",
   "account": {
@@ -13,6 +13,7 @@
     "capital_plan_note": "Rebuilding toward Rs 45,000 floor: Rs 15,000 slots, flexible monthly deposits before month-end decision"
   },
   "gate": {
+    "mode": "off",
     "filter": "OFF",
     "nifty_close": 22687.65,
     "dma200": 24157.71,
