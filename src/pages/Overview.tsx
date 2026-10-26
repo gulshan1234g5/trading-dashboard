@@ -318,13 +318,13 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
               </span>
               <span aria-hidden="true">→</span>
               <span>
-                Now <strong>{inr(account.equity)}</strong>
+                Now <strong>{inr(account.equity, 2)}</strong>
               </span>
               <span aria-hidden="true">→</span>
               <span>
                 Growth{' '}
                 <strong className={pnlCls(account.growth ?? 0)}>
-                  <Tri dir={(account.growth ?? 0) < 0 ? -1 : 1} /> {inrSigned(account.growth ?? 0)}
+                  <Tri dir={(account.growth ?? 0) < 0 ? -1 : 1} /> {inrSigned(account.growth ?? 0, 2)}
                 </strong>{' '}
                 ({pct(account.growth_pct ?? 0)} <Tri dir={(account.growth_pct ?? 0) < 0 ? -1 : 1} />)
               </span>
