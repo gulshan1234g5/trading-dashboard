@@ -1,6 +1,6 @@
 # Gulshan Toppo · Trading Command Center
 
-A mobile-first trading operations dashboard for an NSE swing desk. The interface covers scanner review, paper positions and orders, trade journaling, strategy research, risk governance and system diagnostics.
+A mobile-first trading operations dashboard for one user's NSE monthly momentum rotation. The nav is exactly three pages: **Overview** (live account, regime gate, capital floor), **Systems** (CHAKRA live + DHRUVA parked, curves and the frozen switch rule) and **Playbook** (the month-end runbook with the real commands, execution rails and kill criteria).
 
 The build is intentionally **paper-only**. It does not contain broker credentials, does not place real orders and does not claim that a strategy is live-ready. All market and account values shown by default are deterministic demo fixtures.
 
@@ -36,7 +36,7 @@ export GT_STATE_FILE="$PWD/.data/paper-ledger.json"
 PYTHONPATH=backend uvicorn gulshan_api.main:app --host 127.0.0.1 --port 8787
 ```
 
-The Vite dev server proxies `/api` to `127.0.0.1:8787`. The Settings and System pages probe `/api/health` and display the actual connection state.
+The Vite dev server proxies `/api` to `127.0.0.1:8787`. The backend session API backs the demo lock screen; the capital-floor UI pages (Overview · Systems · Playbook) read `public/live.json` directly and run entirely on the live export.
 
 For local-only development, omitting `GT_PASSPHRASE_HASH` and `GT_SESSION_SECRET` falls back to the passphrase `demo` and an ephemeral session secret. Production startup fails unless both values are explicitly configured.
 
@@ -92,7 +92,7 @@ Current evidence: 13 frontend risk tests and 10 API tests pass; TypeScript, ESLi
 - Qualification: `NOT QUALIFIED`
 - Failed gates include trade count, out-of-sample Sharpe, maximum drawdown, walk-forward stability, cost stress and verified Kite adapter
 
-Do not allocate capital based on the research screen. The research page deliberately exposes missing evidence rather than inventing performance.
+This build has no research or risk-editor pages on purpose: the strategy's rules are frozen pre-registered specs (see `/root/rlt` SPEC/RUNBOOK). Do not add an interactive tuning surface.
 
 ## Known limitations
 

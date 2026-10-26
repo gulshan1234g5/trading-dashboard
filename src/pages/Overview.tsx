@@ -1,71 +1,38 @@
-import { useState } from 'react'
 import {
-  Activity,
-  ArrowDownRight,
-  BarChart3,
   BriefcaseBusiness,
   ChevronRight,
   CircleDollarSign,
-  Clock3,
-  Database,
   LineChart,
-  Play,
-  RefreshCw,
   ShieldAlert,
   ShieldCheck,
-  Target,
   TrendingUp,
   Wallet,
 } from 'lucide-react'
-import type { PageId, Signal } from '../types'
-import { DATA_AS_OF, SIGNALS } from '../data/market'
-import { useApp } from '../lib/store'
+import type { PageId } from '../types'
 import { useLive } from '../lib/live'
-import { inr, pct, shortDateTime, timeAgo } from '../lib/format'
-import { Button, EmptyState, MiniSparkline, PageHeader, Pill, StatusDot } from '../components/ui'
+import { inr, pct } from '../lib/format'
+import { EmptyState, PageHeader, Pill, ProgressBar } from '../components/ui'
 import { SystemsChart } from '../components/charts'
 import { DemoBanner } from '../components/layout'
 
-export function Overview({
-  navigate,
-  openSignal,
-}: {
-  navigate: (page: PageId) => void
-  openSignal: (signal: Signal) => void
-}) {
-  const { state, runScan, addToast } = useApp()
-  const live = useLive()
-  const [scanning, setScanning] = useState(false)
+// Habitual hard floor from the capital rail (reports/live/state.json): below it
+// even ₹1,000 slots are a fee-paying experiment, not the modelled system.
+const HARD_FLOOR = 22_500
 
-  const topSignals = [...SIGNALS].sort((a, b) => b.score - a.score).slice(0, 4)
+export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
+  const live = useLive()
   const account = live.status === 'ok' ? live.data.account : null
   const gate = live.status === 'ok' ? live.data.gate : null
-
-  async function scan() {
-    setScanning(true)
-    await runScan()
-    setScanning(false)
-  }
+  const floorPct = account ? Math.min(100, (account.equity / account.capital_floor) * 100) : 0
 
   return (
     <>
       <PageHeader
-        eyebrow="NSE · Swing desk · Zerodha account"
+        eyebrow="NSE · Monthly momentum rotation · Zerodha"
         title="Command overview"
-        subtitle="Capital and system performance come from the live export (live.json). Scanner, journal, orders and execution panels remain demo fixtures."
-        actions={
-          <>
-            <Button variant="ghost" onClick={() => addToast({ tone: 'info', title: 'Snapshot pinned', message: 'Overview snapshot prepared for review.' })}>
-              <BarChart3 /> Snapshot
-            </Button>
-            <Button variant="primary" onClick={scan} disabled={scanning}>
-              {scanning ? <RefreshCw className="spin" style={{ animation: 'spin 1s linear infinite' }} /> : <Play />}
-              {scanning ? 'Scanning…' : 'Run demo scan'}
-            </Button>
-          </>
-        }
+        subtitle="Account capital, regime gate, system performance and the month-end runbook are live from the export (live.json) and the frozen RUNBOOK — no demo panels."
       />
-      <DemoBanner onSystem={() => navigate('system')} />
+      <DemoBanner onPlaybook={() => navigate('playbook')} />
 
       <section className="kpi-grid" aria-label="Account summary">
         <div className="card kpi-card featured">
@@ -101,7 +68,7 @@ export function Overview({
           <div className="kpi-value">{account ? account.n_positions : '—'}</div>
           <div className="kpi-delta">
             <span className="chip">{account && account.holdings.length === 0 ? 'fully flat' : `${account?.holdings.length ?? 0} holdings`}</span>
-            <span>live broker holdings · not the demo ledger</span>
+            <span>live broker holdings · not a demo ledger</span>
           </div>
         </div>
         <div className="card kpi-card">
@@ -114,6 +81,20 @@ export function Overview({
             <span>{gate ? `next decision ${gate.next_decision}` : ''}</span>
           </div>
         </div>
+      </section>
+
+      <section className="card" style={{ marginTop: 10, padding: 16 }} aria-label="Capital floor progress">
+        <div className="budget-row">
+          <div className="budget-labels">
+            <span>Capital floor</span>
+            <strong>{account ? `${inr(account.equity)} of ${inr(account.capital_floor)}` : '—'}</strong>
+          </div>
+        </div>
+        <ProgressBar value={floorPct} tone={floorPct >= 100 ? 'lime' : 'amber'} />
+        <p style={{ color: 'var(--muted)', fontSize: 9.5, margin: '8px 0 0', lineHeight: 1.6 }}>
+          Below {account ? inr(account.capital_floor) : '₹45,000'} the ₹15.34/slot DP charge breaks the modelled 0.22%
+          round-trip cost. Hard floor {inr(HARD_FLOOR)}{gate?.filter === 'OFF' ? ' · gate is OFF, nothing to do, ever' : ' — below it, skip the month and keep depositing'}.
+        </p>
       </section>
 
       <section className="dashboard-grid">
@@ -129,8 +110,8 @@ export function Overview({
                 Monthly equity index, base 100 · 141 tracked months
               </p>
             </div>
-            <button type="button" className="section-link" onClick={() => navigate('research')}>
-              Research <ChevronRight />
+            <button type="button" className="section-link" onClick={() => navigate('systems')}>
+              Systems <ChevronRight />
             </button>
           </div>
           {live.status === 'ok' ? (
@@ -201,89 +182,36 @@ export function Overview({
               </div>
               {gate ? <Pill tone={gate.filter === 'ON' ? 'lime' : 'amber'}>Filter {gate.filter}</Pill> : <Pill tone="amber">Loading</Pill>}
             </div>
-            <div className="risk-gauge-row">
-              <div className="risk-metrics">
-                <div className="risk-metric">
-                  <span>NIFTY 50 close</span>
-                  <strong>{gate ? gate.nifty_close.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : '—'}</strong>
+            {gate ? (
+              <>
+                <div className="budget-row">
+                  <div className="budget-labels">
+                    <span>NIFTY 50 / 200-DMA</span>
+                    <strong>
+                      {gate.nifty_close.toLocaleString('en-IN', { minimumFractionDigits: 2 })} /{' '}
+                      {gate.dma200.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    </strong>
+                  </div>
+                  <div className="budget-labels">
+                    <span>Gap to 200-DMA</span>
+                    <strong className={gate.gap_pct < 0 ? 'neg' : 'pos'}>{pct(gate.gap_pct)}</strong>
+                  </div>
+                  <div className="budget-labels">
+                    <span>Last / next decision</span>
+                    <strong>{gate.last_decision} → {gate.next_decision}</strong>
+                  </div>
                 </div>
-                <div className="risk-metric">
-                  <span>200-DMA</span>
-                  <strong>{gate ? gate.dma200.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : '—'}</strong>
+                <div style={{ display: 'flex', gap: 6, marginTop: 13 }}>
+                  <button type="button" className="section-link" onClick={() => navigate('playbook')}>
+                    Month-end playbook <ChevronRight />
+                  </button>
                 </div>
-                <div className="risk-metric">
-                  <span>Gap to 200-DMA</span>
-                  <strong className={gate && gate.gap_pct < 0 ? 'neg' : 'pos'}>{gate ? pct(gate.gap_pct) : '—'}</strong>
-                </div>
-                <div className="risk-metric">
-                  <span>Last decision</span>
-                  <strong>{gate ? gate.last_decision : '—'}</strong>
-                </div>
-                <div className="risk-metric">
-                  <span>Next decision</span>
-                  <strong>{gate ? gate.next_decision : '—'}</strong>
-                </div>
+              </>
+            ) : (
+              <div style={{ padding: 18 }}>
+                <EmptyState icon={<ShieldCheck />} title={live.status === 'error' ? 'Gate unavailable' : 'Loading gate…'} text="Gate status appears once live.json is reachable." />
               </div>
-            </div>
-            <div className="budget-row">
-              <div className="budget-labels">
-                <span>Capital plan</span>
-                <strong>
-                  {account
-                    ? account.floor_status === 'below'
-                      ? `Building toward ${inr(account.capital_floor)} floor`
-                      : `Floor of ${inr(account.capital_floor)} met`
-                    : '—'}
-                </strong>
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: 6, marginTop: 13 }}>
-              <button type="button" className="section-link" onClick={() => navigate('risk')}>
-                Risk center <ChevronRight />
-              </button>
-            </div>
-          </div>
-
-          <div className="card engine-card">
-            <div className="engine-head">
-              <div className="card-title-row">
-                <Activity className="icon-inline" />
-                <h2 className="card-title">System health</h2>
-              </div>
-              <span className="live-tag">
-                <StatusDot tone="warn" pulse /> Fixture
-              </span>
-            </div>
-            <div className="health-list">
-              <div className="health-row">
-                <span>Scheduler</span>
-                <span className="health-state">
-                  <StatusDot tone="warn" /> Awaiting bridge
-                </span>
-              </div>
-              <div className="health-row">
-                <span>Last demo scan</span>
-                <span className="health-state">{shortDateTime(state.lastScanAt)}</span>
-              </div>
-              <div className="health-row">
-                <span>Market data</span>
-                <span className="health-state">
-                  <StatusDot tone={live.status === 'ok' ? 'good' : 'warn'} /> {live.status === 'ok' ? `live.json · ${live.data.data_asof}` : 'live.json unreachable'}
-                </span>
-              </div>
-              <div className="health-row">
-                <span>Kite session</span>
-                <span className="health-state">
-                  <StatusDot tone="bad" /> Not connected
-                </span>
-              </div>
-              <div className="health-row">
-                <span>Telegram alerts</span>
-                <span className="health-state">
-                  <StatusDot tone="warn" /> Not configured
-                </span>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </section>
@@ -326,16 +254,13 @@ export function Overview({
         </div>
       </section>
 
-      <section className="overview-bottom">
-        <div className="card table-card">
+      <section style={{ marginTop: 10 }}>
+        <div className="card">
           <div className="section-head">
             <div>
               <h2>Open positions</h2>
               <p>{account ? `${account.n_positions} live holdings · broker ${account.broker.toLowerCase()}` : 'loading live holdings'}</p>
             </div>
-            <button type="button" className="section-link" onClick={() => navigate('positions')}>
-              Positions <ChevronRight />
-            </button>
           </div>
           {account && account.holdings.length > 0 ? (
             <div className="table-wrap">
@@ -361,110 +286,10 @@ export function Overview({
               <EmptyState
                 icon={<BriefcaseBusiness />}
                 title={account ? 'No open positions' : 'Loading holdings…'}
-                text={account ? 'The live account is fully flat. Workflows below and demo ledger positions are on the Positions page.' : 'Fetching broker holdings.'}
+                text={account ? 'The live account is fully flat — the regime gate is out of the market, so cash is the position.' : 'Fetching broker holdings.'}
               />
             </div>
           )}
-        </div>
-
-        <div className="card">
-          <div className="section-head">
-            <div>
-              <h2>Scanner pulse</h2>
-              <p>
-                <Pill tone="amber">Demo</Pill> Top-ranked demo setups · {shortDateTime(DATA_AS_OF)}
-              </p>
-            </div>
-            <button type="button" className="section-link" onClick={() => navigate('scanner')}>
-              Scanner <ChevronRight />
-            </button>
-          </div>
-          <div>
-            {topSignals.map((signal) => (
-              <button
-                type="button"
-                key={signal.id}
-                className="signal-row"
-                onClick={() => openSignal(signal)}
-                style={{ width: '100%', borderLeft: 0, borderRight: 0, background: 'transparent', textAlign: 'left' }}
-              >
-                <span className="signal-score">{signal.score}</span>
-                <span className="signal-main">
-                  <span className="signal-name-row">
-                    <span className="signal-symbol">{signal.symbol}</span>
-                    <Pill tone={signal.setup === 'Breakout' ? 'lime' : signal.setup === 'Pullback' ? 'cyan' : 'violet'}>
-                      {signal.setup}
-                    </Pill>
-                  </span>
-                  <span className="signal-desc">{signal.strategy} · RS {signal.rsRank}</span>
-                </span>
-                <MiniSparkline data={signal.spark} positive={signal.changePct >= 0} width={47} height={19} />
-                <span className="signal-price">
-                  {inr(signal.price, 1)}
-                  <span className={signal.changePct >= 0 ? 'pos' : 'neg'}>{pct(signal.changePct)}</span>
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="page-grid grid-main-side" style={{ marginTop: 10 }}>
-        <div className="card">
-          <div className="section-head">
-            <div>
-              <h2>Recent activity</h2>
-              <div className="card-sub">Browser demo ledger · latest events · <span className="mono" style={{ color: 'var(--muted-dim)' }}>DEMO</span></div>
-            </div>
-            <button type="button" className="section-link" onClick={() => navigate('system')}>
-              System logs <ChevronRight />
-            </button>
-          </div>
-          <div className="feed">
-            {state.logs.slice(0, 4).map((log) => {
-              const tone = log.level === 'SUCCESS' ? 'good' : log.level === 'WARN' ? 'warn' : log.level === 'ERROR' ? 'bad' : ''
-              const Icon = log.source === 'scanner' ? Target : log.source === 'market-data' ? Database : log.source === 'kite' ? ShieldAlert : log.source === 'risk' ? ShieldCheck : log.source === 'orders' ? CircleDollarSign : Clock3
-              return (
-                <div className="feed-row" key={log.id}>
-                  <div className={`feed-icon ${tone}`}>
-                    <Icon />
-                  </div>
-                  <div className="feed-main">
-                    <div className="feed-title">
-                      <strong>{log.source}</strong> · {log.message}
-                    </div>
-                    <div className="feed-meta">{timeAgo(log.at)} · {shortDateTime(log.at)}</div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-        <div className="card" style={{ padding: 16 }}>
-          <div className="card-title-row">
-            <Target className="icon-inline" />
-            <h2 className="card-title">Today's discipline</h2>
-            <Pill tone="amber">Demo</Pill>
-          </div>
-          <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {[
-              { label: 'Trades inside risk plan', value: '—' },
-              { label: 'Stop-losses attached', value: '—' },
-              { label: 'Revenge-trade flags', value: '—' },
-              { label: 'Daily loss budget used', value: '—' },
-            ].map((item) => (
-              <div key={item.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingBottom: 9, borderBottom: '1px solid var(--line-soft)' }}>
-                <span style={{ color: 'var(--muted)', fontSize: 9.5 }}>{item.label}</span>
-                <span className="mono dim" style={{ fontSize: 10 }}>{item.value}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 12, marginBottom: 12 }}>
-            <ArrowDownRight size={12} color="var(--amber)" aria-hidden="true" />
-            <span style={{ color: 'var(--muted-dim)', fontSize: 8.5 }}>
-              Discipline tracking has no live source yet. System max drawdown headlines are daily-basis — check the month-end figure too.
-            </span>
-          </div>
         </div>
       </section>
     </>

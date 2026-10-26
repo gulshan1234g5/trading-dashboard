@@ -1,13 +1,4 @@
-export type PageId =
-  | 'overview'
-  | 'scanner'
-  | 'positions'
-  | 'orders'
-  | 'journal'
-  | 'research'
-  | 'risk'
-  | 'system'
-  | 'settings'
+export type PageId = 'overview' | 'systems' | 'playbook'
 
 export type Trend = 'Rising' | 'Falling' | 'Sideways'
 export type SetupType = 'Breakout' | 'Pullback' | 'Momentum'

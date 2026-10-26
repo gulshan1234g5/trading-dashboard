@@ -1,17 +1,10 @@
 import { useEffect, useState, type ComponentType } from 'react'
 import {
   Activity,
-  Bell,
   BookOpenText,
-  BriefcaseBusiness,
   ChevronRight,
-  FlaskConical,
   LayoutDashboard,
-  ListOrdered,
-  Menu,
-  Radar,
   Search,
-  Settings,
   ShieldCheck,
   X,
   Zap,
@@ -19,7 +12,7 @@ import {
 import type { PageId } from '../types'
 import { useApp } from '../lib/store'
 import { useLive } from '../lib/live'
-import { DATA_MODE, MARKET_STATUS } from '../data/market'
+import { MARKET_STATUS } from '../data/market'
 import { StatusDot } from './ui'
 
 export interface NavItem {
@@ -34,18 +27,8 @@ export const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
     label: 'Workspace',
     items: [
       { id: 'overview', label: 'Overview', icon: LayoutDashboard, shortcut: 'G O' },
-      { id: 'scanner', label: 'NSE Scanner', icon: Radar, shortcut: 'G S' },
-      { id: 'positions', label: 'Positions', icon: BriefcaseBusiness },
-      { id: 'orders', label: 'Orders', icon: ListOrdered },
-      { id: 'journal', label: 'Trade Journal', icon: BookOpenText },
-    ],
-  },
-  {
-    label: 'Intelligence',
-    items: [
-      { id: 'research', label: 'Strategy Research', icon: FlaskConical },
-      { id: 'risk', label: 'Risk Management', icon: ShieldCheck },
-      { id: 'system', label: 'System Monitor', icon: Activity },
+      { id: 'systems', label: 'Systems', icon: Activity, shortcut: 'G S' },
+      { id: 'playbook', label: 'Playbook', icon: BookOpenText, shortcut: 'G P' },
     ],
   },
 ]
@@ -53,14 +36,8 @@ export const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
 export const NAV_ITEMS = NAV_GROUPS.flatMap((group) => group.items)
 const PAGE_LABELS: Record<PageId, string> = {
   overview: 'Overview',
-  scanner: 'NSE Scanner',
-  positions: 'Positions',
-  orders: 'Orders',
-  journal: 'Trade Journal',
-  research: 'Strategy Research',
-  risk: 'Risk Management',
-  system: 'System Monitor',
-  settings: 'Settings',
+  systems: 'Systems',
+  playbook: 'Playbook',
 }
 
 export function useClock(): string {
@@ -137,32 +114,16 @@ export function Sidebar({ active, navigate }: { active: PageId; navigate: (page:
             </ul>
           </div>
         ))}
-        <div>
-          <div className="nav-section-label">Workspace</div>
-          <ul className="nav-list">
-            <li>
-              <button
-                type="button"
-                className={`nav-link ${active === 'settings' ? 'active' : ''}`.trim()}
-                onClick={() => navigate('settings')}
-                aria-current={active === 'settings' ? 'page' : undefined}
-              >
-                <Settings />
-                <span>Settings</span>
-              </button>
-            </li>
-          </ul>
-        </div>
       </nav>
 
       <div className="sidebar-footer">
         <div className="engine-mini">
           <div className="engine-mini-head">
             <span>Engine</span>
-            <StatusDot tone="warn" />
+            <StatusDot tone={state.kiteConnected ? 'good' : 'warn'} />
           </div>
-          <div className="engine-mini-row">Awaiting backend</div>
-          <div className="engine-mini-meta">No local engine bridge · demo fixture</div>
+          <div className="engine-mini-row">{state.kiteConnected ? 'Kite live' : 'No local engine bridge'}</div>
+          <div className="engine-mini-meta">Orders run from the terminal playbook, not this UI</div>
         </div>
         <div className="user-card">
           <div className="avatar">GT</div>
@@ -183,22 +144,15 @@ export function Sidebar({ active, navigate }: { active: PageId; navigate: (page:
 export function Topbar({
   active,
   onSearch,
-  onMenu,
-  onSystem,
 }: {
   active: PageId
   onSearch: () => void
-  onMenu: () => void
-  onSystem: () => void
 }) {
   const clock = useClock()
   const live = useLive()
   return (
     <header className="topbar">
       <div className="topbar-left">
-        <button type="button" className="icon-btn mobile-menu-btn" onClick={onMenu} aria-label="Open navigation">
-          <Menu />
-        </button>
         <div className="breadcrumb" aria-label="Breadcrumb">
           <span>Command Center</span>
           <span className="breadcrumb-sep">/</span>
@@ -214,11 +168,8 @@ export function Topbar({
         </div>
       </div>
       <div className="topbar-right">
-        <button type="button" className="icon-btn" onClick={onSearch} aria-label="Search pages and stocks" title="Search">
+        <button type="button" className="icon-btn" onClick={onSearch} aria-label="Search pages" title="Search">
           <Search />
-        </button>
-        <button type="button" className="icon-btn" onClick={onSystem} aria-label="View system alerts" title="System alerts">
-          <Bell />
         </button>
         <div className="avatar" aria-hidden="true" style={{ width: 31, height: 31 }}>
           GT
@@ -228,93 +179,38 @@ export function Topbar({
   )
 }
 
-export function MobileNav({ active, navigate, moreOpen, setMoreOpen }: { active: PageId; navigate: (page: PageId) => void; moreOpen: boolean; setMoreOpen: (open: boolean) => void }) {
-  const items = [
-    { id: 'overview' as const, label: 'Overview', icon: LayoutDashboard },
-    { id: 'scanner' as const, label: 'Scanner', icon: Radar },
-    { id: 'positions' as const, label: 'Positions', icon: BriefcaseBusiness },
-    { id: 'orders' as const, label: 'Orders', icon: ListOrdered },
-  ]
+export function MobileNav({ active, navigate }: { active: PageId; navigate: (page: PageId) => void }) {
   return (
-    <>
-      {moreOpen ? (
-        <>
-          <div
-            className="modal-overlay"
-            style={{ zIndex: 80 }}
-            onMouseDown={(event) => event.currentTarget === event.target && setMoreOpen(false)}
+    <nav className="mobile-nav" aria-label="Mobile navigation">
+      {NAV_ITEMS.map((item) => {
+        const Icon = item.icon
+        return (
+          <button
+            type="button"
+            key={item.id}
+            className={`mobile-nav-item ${active === item.id ? 'active' : ''}`.trim()}
+            onClick={() => navigate(item.id)}
+            aria-current={active === item.id ? 'page' : undefined}
           >
-            <div className="mobile-more" role="dialog" aria-label="All navigation">
-              <div className="mobile-more-head">
-                <span>All workspaces</span>
-                <button type="button" className="icon-btn" onClick={() => setMoreOpen(false)} aria-label="Close menu">
-                  <X />
-                </button>
-              </div>
-              <div className="mobile-more-grid">
-                {[...NAV_ITEMS, { id: 'settings' as const, label: 'Settings', icon: Settings }].map((item) => {
-                  const Icon = item.icon
-                  return (
-                    <button
-                      type="button"
-                      key={item.id}
-                      className={`mobile-more-item ${active === item.id ? 'active' : ''}`.trim()}
-                      onClick={() => {
-                        navigate(item.id)
-                        setMoreOpen(false)
-                      }}
-                    >
-                      <Icon />
-                      {item.label}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-        </>
-      ) : null}
-      <nav className="mobile-nav" aria-label="Mobile navigation">
-        {items.map((item) => {
-          const Icon = item.icon
-          return (
-            <button
-              type="button"
-              key={item.id}
-              className={`mobile-nav-item ${active === item.id ? 'active' : ''}`.trim()}
-              onClick={() => navigate(item.id)}
-              aria-current={active === item.id ? 'page' : undefined}
-            >
-              <Icon />
-              {item.label}
-            </button>
-          )
-        })}
-        <button
-          type="button"
-          className={`mobile-nav-item ${moreOpen ? 'active' : ''}`.trim()}
-          onClick={() => setMoreOpen(!moreOpen)}
-          aria-expanded={moreOpen}
-        >
-          <Menu />
-          More
-        </button>
-      </nav>
-    </>
+            <Icon />
+            {item.label}
+          </button>
+        )
+      })}
+    </nav>
   )
 }
 
-export function DemoBanner({ onSystem }: { onSystem: () => void }) {
+export function DemoBanner({ onPlaybook }: { onPlaybook: () => void }) {
   return (
     <div className="demo-banner" role="status">
       <ShieldCheck />
       <span>
-        <strong>Demo panels are clearly labelled.</strong> Account capital, system curves and recent months on the
-        overview are live — scanner, journal, orders, research and execution values are labelled fixtures with no live
-        Kite session, engine feed or market data.
+        <strong>Every number here is live.</strong> Account capital, regime gate, system curves and the month-end
+        runbook come from live.json and the frozen RUNBOOK — no demo scanner, order book or journal exists in this build.
       </span>
-      <button type="button" className="demo-banner-link" onClick={onSystem}>
-        Inspect system
+      <button type="button" className="demo-banner-link" onClick={onPlaybook}>
+        Open playbook
       </button>
     </div>
   )
@@ -330,7 +226,7 @@ export function LiveFooter() {
         role="status"
         style={{ margin: '13px 0 4px', color: 'var(--amber)', fontSize: 8, textAlign: 'center' }}
       >
-        ⚠ live.json unreachable ({live.error}) — showing demo data until the export loads
+        ⚠ live.json unreachable ({live.error}) — panels will fill in once the export loads
       </div>
     )
   }
@@ -338,7 +234,6 @@ export function LiveFooter() {
   return (
     <div className="mono" style={{ margin: '13px 0 4px', color: 'var(--muted-dim)', fontSize: 8, textAlign: 'center' }}>
       Live data · as of {data.data_asof} · updated {data.generated_at}
-      {DATA_MODE === 'DEMO_FIXTURE' ? ' · interactive panels run on the local demo ledger' : ''}
     </div>
   )
 }
@@ -347,15 +242,12 @@ export function CommandPalette({
   open,
   onClose,
   navigate,
-  openSignal,
 }: {
   open: boolean
   onClose: () => void
   navigate: (page: PageId) => void
-  openSignal: (symbol: string) => void
 }) {
   const [query, setQuery] = useState('')
-  const { state } = useApp()
   useEffect(() => {
     if (!open) setQuery('')
     if (!open) return
@@ -366,12 +258,7 @@ export function CommandPalette({
     return () => document.removeEventListener('keydown', onKey)
   }, [open, onClose])
   if (!open) return null
-  const pages = [...NAV_ITEMS, { id: 'settings' as const, label: 'Settings', icon: Settings }].filter((item) =>
-    item.label.toLowerCase().includes(query.toLowerCase()),
-  )
-  const symbols = [...new Set([...state.watchlist, ...state.positions.map((position) => position.symbol)])]
-    .filter((symbol) => symbol.toLowerCase().includes(query.toLowerCase()))
-    .slice(0, 5)
+  const pages = NAV_ITEMS.filter((item) => item.label.toLowerCase().includes(query.toLowerCase()))
   return (
     <div className="modal-overlay" onMouseDown={(event) => event.currentTarget === event.target && onClose()}>
       <div className="modal command-modal" role="dialog" aria-label="Command search">
@@ -381,7 +268,7 @@ export function CommandPalette({
             autoFocus
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search workspaces or symbols…"
+            placeholder="Search pages…"
             aria-label="Search"
             style={{
               width: '100%',
@@ -414,26 +301,6 @@ export function CommandPalette({
               </button>
             )
           })}
-          {symbols.length > 0 ? (
-            <>
-              <div className="nav-section-label" style={{ padding: '12px 8px 6px' }}>Symbols</div>
-              {symbols.map((symbol) => (
-                <button
-                  type="button"
-                  key={symbol}
-                  className="nav-link"
-                  onClick={() => {
-                    openSignal(symbol)
-                    onClose()
-                  }}
-                >
-                  <Radar />
-                  <span className="mono">{symbol}</span>
-                  <span className="nav-kbd">Open setup</span>
-                </button>
-              ))}
-            </>
-          ) : null}
         </div>
       </div>
     </div>

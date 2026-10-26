@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowRight, LockKeyhole, ShieldCheck } from 'lucide-react'
-import type { PageId, Signal } from './types'
+import type { PageId } from './types'
 import { useApp } from './lib/store'
-import { SIGNALS } from './data/market'
 import { Button } from './components/ui'
 import {
   CommandPalette,
@@ -12,28 +11,11 @@ import {
   ToastHost,
   Topbar,
 } from './components/layout'
-import { SignalDetailDrawer } from './components/SignalDetail'
 import { Overview } from './pages/Overview'
-import { Scanner } from './pages/Scanner'
-import { Positions } from './pages/Positions'
-import { Orders } from './pages/Orders'
-import { Journal } from './pages/Journal'
-import { Research } from './pages/Research'
-import { Risk } from './pages/Risk'
-import { System } from './pages/System'
-import { SettingsPage } from './pages/Settings'
+import { Systems } from './pages/Systems'
+import { Playbook } from './pages/Playbook'
 
-const PAGES: PageId[] = [
-  'overview',
-  'scanner',
-  'positions',
-  'orders',
-  'journal',
-  'research',
-  'risk',
-  'system',
-  'settings',
-]
+const PAGES: PageId[] = ['overview', 'systems', 'playbook']
 
 function pageFromHash(): PageId {
   const raw = window.location.hash.replace(/^#\/?/, '')
@@ -43,9 +25,7 @@ function pageFromHash(): PageId {
 export default function App() {
   const { state, unlockSession } = useApp()
   const [page, setPage] = useState<PageId>(pageFromHash)
-  const [selectedSignal, setSelectedSignal] = useState<Signal | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
-  const [moreOpen, setMoreOpen] = useState(false)
   const [passphrase, setPassphrase] = useState('')
   const [unlockError, setUnlockError] = useState(false)
 
@@ -80,40 +60,18 @@ export default function App() {
     return () => document.removeEventListener('keydown', onKey)
   }, [])
 
-  const openSignal = useCallback((signal: Signal) => {
-    setSelectedSignal(signal)
-    setMoreOpen(false)
-  }, [])
-
-  const openSignalBySymbol = useCallback((symbol: string) => {
-    const signal = SIGNALS.find((item) => item.symbol === symbol)
-    if (signal) setSelectedSignal(signal)
-  }, [])
-
   const content = useMemo(() => {
     switch (page) {
       case 'overview':
-        return <Overview navigate={navigate} openSignal={openSignal} />
-      case 'scanner':
-        return <Scanner openSignal={openSignal} />
-      case 'positions':
-        return <Positions navigate={navigate} />
-      case 'orders':
-        return <Orders navigate={navigate} />
-      case 'journal':
-        return <Journal />
-      case 'research':
-        return <Research />
-      case 'risk':
-        return <Risk />
-      case 'system':
-        return <System />
-      case 'settings':
-        return <SettingsPage navigate={navigate} />
+        return <Overview navigate={navigate} />
+      case 'systems':
+        return <Systems />
+      case 'playbook':
+        return <Playbook />
       default:
         return null
     }
-  }, [navigate, openSignal, page])
+  }, [navigate, page])
 
   if (state.sessionLocked) {
     return (
@@ -171,20 +129,14 @@ export default function App() {
     <div className="app-shell">
       <Sidebar active={page} navigate={navigate} />
       <div className="main-area">
-        <Topbar
-          active={page}
-          onSearch={() => setSearchOpen(true)}
-          onMenu={() => setMoreOpen(true)}
-          onSystem={() => navigate('system')}
-        />
+        <Topbar active={page} onSearch={() => setSearchOpen(true)} />
         <main className="page-wrap" id="main-content">
           {content}
         </main>
         <LiveFooter />
       </div>
-      <MobileNav active={page} navigate={navigate} moreOpen={moreOpen} setMoreOpen={setMoreOpen} />
-      {selectedSignal ? <SignalDetailDrawer signal={selectedSignal} onClose={() => setSelectedSignal(null)} /> : null}
-      <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} navigate={navigate} openSignal={openSignalBySymbol} />
+      <MobileNav active={page} navigate={navigate} />
+      <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} navigate={navigate} />
       <ToastHost />
       <div className="sr-only" aria-live="polite">
         <ArrowRight /> {page}

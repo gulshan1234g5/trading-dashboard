@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { useEffect, useRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { Check, X } from 'lucide-react'
 
 export function Pill({
@@ -57,53 +57,6 @@ export function PageHeader({
       </div>
       {actions ? <div className="page-actions">{actions}</div> : null}
     </header>
-  )
-}
-
-export function MiniSparkline({
-  data,
-  positive = true,
-  width = 64,
-  height = 22,
-  fill = false,
-}: {
-  data: number[]
-  positive?: boolean
-  width?: number
-  height?: number
-  fill?: boolean
-}) {
-  const id = useId().replace(/:/g, '')
-  const min = Math.min(...data)
-  const max = Math.max(...data)
-  const span = max - min || 1
-  const points = data
-    .map((value, index) => {
-      const x = (index / Math.max(1, data.length - 1)) * width
-      const y = height - 2 - ((value - min) / span) * (height - 4)
-      return `${x.toFixed(2)},${y.toFixed(2)}`
-    })
-    .join(' ')
-  const color = positive ? '#63e6be' : '#ff6f86'
-  const area = `0,${height} ${points} ${width},${height}`
-  return (
-    <svg
-      className="mini-spark"
-      width={width}
-      height={height}
-      viewBox={`0 0 ${width} ${height}`}
-      role="img"
-      aria-label={`price trend ${positive ? 'up' : 'down'}`}
-    >
-      <defs>
-        <linearGradient id={`spark-${id}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.22" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      {fill ? <polygon points={area} fill={`url(#spark-${id})`} /> : null}
-      <polyline points={points} fill="none" stroke={color} strokeWidth="1.3" strokeLinejoin="round" strokeLinecap="round" />
-    </svg>
   )
 }
 
