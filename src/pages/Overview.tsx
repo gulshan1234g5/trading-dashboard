@@ -24,10 +24,10 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
   const account = live.status === 'ok' ? live.data.account : null
   const gate = live.status === 'ok' ? live.data.gate : null
   const floorPct = account ? Math.min(100, (account.equity / account.capital_floor) * 100) : 0
-  const costBasis = account ? account.holdings.reduce((sum, h) => sum + h.qty * (h.avg ?? 0), 0) : 0
-  const unrealized = account ? (account.unrealized_pnl ?? account.holdings.reduce((sum, h) => sum + (h.pnl ?? 0), 0)) : 0
-  const unrealizedPct = costBasis > 0 ? (unrealized / costBasis) * 100 : 0
-  const priceDate = account?.holdings.find((h) => h.last_date)?.last_date
+  const costBasis = account?.cost_basis ?? 0
+  const unrealized = account?.unrealized_pnl ?? 0
+  const unrealizedPct = account?.return_pct ?? (costBasis > 0 ? (unrealized / costBasis) * 100 : 0)
+  const priceDate = account?.prices_asof
   const pnlCls = (pnl: number) => (pnl < 0 ? 'neg' : 'pos')
 
   return (
@@ -81,7 +81,7 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
           </div>
           <div className="kpi-value">{account ? account.n_positions : '—'}</div>
           <div className="kpi-delta">
-            <span className="chip">{account && account.holdings.length === 0 ? 'fully flat' : `${account?.holdings.length ?? 0} holdings`}</span>
+            <span className="chip">{account && account.n_positions === 0 ? 'fully flat' : 'aggregate only · details private'}</span>
             <span>live broker holdings · not a demo ledger</span>
           </div>
         </div>
@@ -287,55 +287,20 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
         <div className="card">
           <div className="section-head">
             <div>
-              <h2>Open positions</h2>
-              <p>{account ? `${account.n_positions} live holdings · broker ${account.broker.toLowerCase()}` : 'loading live holdings'}</p>
+              <h2>Portfolio P&amp;L</h2>
+              <p>{account ? `${account.n_positions} live holdings · individual positions kept private` : 'loading portfolio P&L'}</p>
             </div>
           </div>
-          {account && account.holdings.length > 0 ? (
+          {account && account.n_positions > 0 ? (
             <>
-              <div className="table-wrap">
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Instrument</th>
-                      <th>Qty</th>
-                      <th>Avg</th>
-                      <th>Last</th>
-                      <th>P&amp;L</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {account.holdings.map((holding) => (
-                      <tr key={holding.symbol}>
-                        <td className="symbol-name">{holding.symbol}</td>
-                        <td className="num">{holding.qty}</td>
-                        <td className="num">{holding.avg != null ? inr(holding.avg, 2) : '—'}</td>
-                        <td className="num">{holding.last != null ? inr(holding.last, 2) : '—'}</td>
-                        <td className={`num ${holding.pnl != null ? pnlCls(holding.pnl) : ''}`}>
-                          {holding.pnl != null ? (
-                            <>
-                              {holding.pnl > 0 ? '+' : ''}{inr(holding.pnl, 2)}{' '}
-                              <span style={{ fontSize: 9 }}>{pct(holding.pnl_pct ?? 0)}</span>
-                            </>
-                          ) : (
-                            '—'
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className={pnlCls(unrealized)} style={{ fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em' }}>
+                {unrealized > 0 ? '+' : ''}{inr(unrealized, 2)}
               </div>
-              <div className="budget-row" style={{ marginTop: 10 }}>
-                <div className="budget-labels">
-                  <span>Unrealized P&amp;L</span>
-                  <strong className={pnlCls(unrealized)}>
-                    {unrealized > 0 ? '+' : ''}{inr(unrealized, 2)} ({pct(unrealizedPct)} total across holdings)
-                  </strong>
-                </div>
+              <div style={{ color: 'var(--muted)', fontSize: 10, marginTop: 4 }}>
+                {unrealized > 0 ? '+' : ''}{pct(unrealizedPct)} on {inr(costBasis, 2)} cost across {account.n_positions} positions
               </div>
               {priceDate ? (
-                <p style={{ color: 'var(--muted)', fontSize: 9.5, margin: '6px 0 0', lineHeight: 1.6 }}>
+                <p style={{ color: 'var(--muted)', fontSize: 9.5, margin: '8px 0 0', lineHeight: 1.6 }}>
                   Prices at NSE close {priceDate}
                 </p>
               ) : null}
@@ -344,8 +309,8 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
             <div style={{ padding: 18 }}>
               <EmptyState
                 icon={<BriefcaseBusiness />}
-                title={account ? 'No open positions' : 'Loading holdings…'}
-                text={account ? 'The live account is fully flat — the regime gate is out of the market, so cash is the position.' : 'Fetching broker holdings.'}
+                title={account ? 'No open positions' : 'Loading portfolio…'}
+                text={account ? 'The live account is fully flat — the regime gate is out of the market, so cash is the position.' : 'Fetching portfolio P&L.'}
               />
             </div>
           )}

@@ -35,8 +35,9 @@ export interface LiveSnapshot {
     broker: string
     cash: number
     holdings: Array<{
-      symbol: string
-      qty: number
+      /** optional: new exports are aggregate-only (rows never emitted) */
+      symbol?: string
+      qty?: number
       /** optional: old live.json exports predate per-position P&L */
       avg?: number
       last?: number
@@ -45,6 +46,9 @@ export interface LiveSnapshot {
       pnl_pct?: number
     }>
     n_positions: number
+    cost_basis?: number
+    return_pct?: number
+    prices_asof?: string
     unrealized_pnl?: number
     equity: number
     capital_floor: number
@@ -92,10 +96,13 @@ export function parseLive(raw: any): LiveSnapshot | null {
   for (const h of a.holdings) {
     if (h === null || typeof h !== 'object') return null
     const o = h as Record<string, unknown>
-    if (typeof o.symbol !== 'string' || typeof o.qty !== 'number') return null
-    if (!optNum(o.avg) || !optNum(o.last) || !optNum(o.pnl) || !optNum(o.pnl_pct)) return null
+    if (o.symbol !== undefined && typeof o.symbol !== 'string') return null
+    if (!optNum(o.qty) || !optNum(o.avg) || !optNum(o.last) || !optNum(o.pnl) || !optNum(o.pnl_pct)) return null
     if (o.last_date !== undefined && typeof o.last_date !== 'string') return null
   }
+  if (a.cost_basis !== undefined && typeof a.cost_basis !== 'number') return null
+  if (a.return_pct !== undefined && typeof a.return_pct !== 'number') return null
+  if (a.prices_asof !== undefined && typeof a.prices_asof !== 'string') return null
 
   const g = raw.gate
   if (g === null || typeof g !== 'object') return null

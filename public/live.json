@@ -1,42 +1,17 @@
 {
-  "generated_at": "2026-10-26T08:12:43Z",
+  "generated_at": "2026-10-26T08:19:04Z",
   "data_asof": "2026-10-23",
   "mode": "REAL",
   "account": {
     "broker": "ZERODHA",
     "cash": 380.65,
-    "holdings": [
-      {
-        "symbol": "GCSL",
-        "qty": 3,
-        "avg": 725.1,
-        "last": 726.2,
-        "pnl": 3.3,
-        "pnl_pct": 0.15,
-        "last_date": "2026-10-23"
-      },
-      {
-        "symbol": "LAURUSLABS",
-        "qty": 1,
-        "avg": 2032.8,
-        "last": 1970.0,
-        "pnl": -62.8,
-        "pnl_pct": -3.09,
-        "last_date": "2026-10-23"
-      },
-      {
-        "symbol": "SHREEJISPG",
-        "qty": 3,
-        "avg": 803.75,
-        "last": 776.6,
-        "pnl": -81.45,
-        "pnl_pct": -3.38,
-        "last_date": "2026-10-23"
-      }
-    ],
+    "holdings": [],
     "n_positions": 3,
+    "cost_basis": 6619.35,
     "unrealized_pnl": -140.95,
-    "equity": 7000.0,
+    "return_pct": -2.13,
+    "equity": 6859.05,
+    "prices_asof": "2026-10-23",
     "capital_floor": 45000,
     "floor_status": "below",
     "capital_plan_note": "Rebuilding toward Rs 45,000 floor: Rs 15,000 slots, flexible monthly deposits before month-end decision"
