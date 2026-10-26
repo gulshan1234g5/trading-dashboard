@@ -10,7 +10,6 @@ import {
 } from 'react'
 import { computePortfolio, INITIAL_STATE, type ComputedPortfolio } from '../data/market'
 import type { DashboardState, JournalDraft, Order, OrderDraft, RiskConfig, Toast } from '../types'
-import { probeBackend, type BackendConnection } from './api'
 import { estimateCharges, evaluateOrder, signalToIntent, validateRiskConfig } from './risk'
 
 const STORAGE_KEY = 'gulshan-command-center-v3'
@@ -19,8 +18,6 @@ interface AppContextValue {
   state: DashboardState
   portfolio: ComputedPortfolio
   toasts: Toast[]
-  backend: BackendConnection
-  refreshBackend: () => Promise<void>
   addToast: (toast: Omit<Toast, 'id'>) => void
   dismissToast: (id: string) => void
   toggleWatchlist: (symbol: string) => void
@@ -67,7 +64,6 @@ function nowIso(): string {
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<DashboardState>(loadState)
   const [toasts, setToasts] = useState<Toast[]>([])
-  const [backend, setBackend] = useState<BackendConnection>({ status: 'checking' })
   const timers = useRef<Map<string, number>>(new Map())
 
   useEffect(() => {
@@ -85,15 +81,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       current.clear()
     }
   }, [])
-
-  const refreshBackend = useCallback(async () => {
-    setBackend({ status: 'checking' })
-    setBackend(await probeBackend())
-  }, [])
-
-  useEffect(() => {
-    void refreshBackend()
-  }, [refreshBackend])
 
   const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
     const id = uid('toast')
@@ -492,8 +479,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       state,
       portfolio,
       toasts,
-      backend,
-      refreshBackend,
       addToast,
       dismissToast,
       toggleWatchlist,
@@ -514,8 +499,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       state,
       portfolio,
       toasts,
-      backend,
-      refreshBackend,
       addToast,
       dismissToast,
       toggleWatchlist,
