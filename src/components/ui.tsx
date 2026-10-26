@@ -13,6 +13,15 @@ export function Pill({
   return <span className={`pill ${tone} ${className}`.trim()}>{children}</span>
 }
 
+// Tiny ▲/▼ direction glyph beside signed numbers: color is never the only signal.
+export function Tri({ dir }: { dir: 1 | -1 }) {
+  return (
+    <span aria-hidden="true" style={{ fontSize: '0.75em' }}>
+      {dir > 0 ? '▲' : '▼'}
+    </span>
+  )
+}
+
 export function StatusDot({ tone = 'neutral', pulse = false }: { tone?: 'good' | 'warn' | 'bad' | 'neutral'; pulse?: boolean }) {
   return <span className={`dot ${tone} ${pulse ? 'pulse' : ''}`.trim()} aria-hidden="true" />
 }

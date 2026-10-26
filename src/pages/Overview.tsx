@@ -10,8 +10,8 @@ import {
 } from 'lucide-react'
 import type { PageId } from '../types'
 import { useLive } from '../lib/live'
-import { inr, pct } from '../lib/format'
-import { EmptyState, PageHeader, Pill, ProgressBar } from '../components/ui'
+import { inr, inrSigned, pct } from '../lib/format'
+import { EmptyState, PageHeader, Pill, ProgressBar, Tri } from '../components/ui'
 import { SystemsChart } from '../components/charts'
 import { DemoBanner } from '../components/layout'
 
@@ -23,6 +23,14 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
   const live = useLive()
   const account = live.status === 'ok' ? live.data.account : null
   const gate = live.status === 'ok' ? live.data.gate : null
+  const benchmark = live.status === 'ok' ? live.data.benchmark : undefined
+  const dataAsof = live.status === 'ok' ? live.data.data_asof : undefined
+  const asOf = (card: string, since?: string) =>
+    since ? (
+      <div style={{ color: 'var(--muted-dim)', fontSize: 8.5, fontFamily: 'var(--font-mono)', marginTop: 8 }}>
+        {card} · as of {since}
+      </div>
+    ) : null
   const floorPct = account ? Math.min(100, (account.equity / account.capital_floor) * 100) : 0
   const costBasis = account?.cost_basis ?? 0
   const unrealized = account?.unrealized_pnl ?? 0
@@ -59,9 +67,12 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
             <div style={{ marginTop: 12 }}>
               <div className="budget-labels">
                 <span>Floor progress</span>
-                <strong className={account.floor_status === 'below' ? 'neg' : 'pos'}>{Math.round(floorPct)}%</strong>
+                <strong className={account.floor_status === 'below' ? 'neg' : 'pos'}>
+                  <Tri dir={account.floor_status === 'below' ? -1 : 1} /> {Math.round(floorPct)}%
+                </strong>
               </div>
               <ProgressBar value={floorPct} tone={floorPct >= 100 ? 'lime' : 'amber'} />
+              {asOf('prices', priceDate)}
             </div>
           ) : null}
         </div>
@@ -74,6 +85,7 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
             <span className="chip">{account?.started_on ? `since ${account.started_on}` : 'total pay-ins'}</span>
             <span>{account ? account.capital_plan_note : ''}</span>
           </div>
+          {asOf('ledger', priceDate)}
         </div>
         <div className="card kpi-card">
           <div className="kpi-label">
@@ -84,6 +96,7 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
             <span className="chip">{account && account.n_positions === 0 ? 'fully flat' : 'aggregate only · details private'}</span>
             <span>live broker holdings · not a demo ledger</span>
           </div>
+          {asOf('prices', priceDate)}
         </div>
         <div className="card kpi-card">
           <div className="kpi-label">
@@ -94,6 +107,7 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
             <span className="chip">NIFTY vs 200-DMA{gate ? (gate.mode === 'off' ? ' · off' : '') : ''}</span>
             <span>{gate ? `next decision ${gate.next_decision}` : ''}</span>
           </div>
+          {asOf('gate', priceDate)}
         </div>
       </section>
 
@@ -124,6 +138,7 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
           Below {account ? inr(account.capital_floor) : '₹45,000'} the ₹15.34/slot DP charge breaks the modelled 0.22%
           round-trip cost. Hard floor {inr(HARD_FLOOR)}{gate?.mode === 'off' ? ' · gate disabled (override) — buy lists print every month-end, the floor is the only brake' : ' — below it, skip the month and keep depositing'}.
         </p>
+        {asOf('prices', priceDate)}
       </section>
 
       <section className="dashboard-grid">
@@ -178,14 +193,15 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
                     </div>
                     <div style={{ color: 'var(--muted-dim)', fontSize: 8.5, marginTop: 6, fontFamily: 'var(--font-mono)' }}>
                       {system.status === 'PARKED' ? 'Parked · activates at ₹4.5L capital' : 'Live allocation'}
+                      {dataAsof ? ` · as of ${dataAsof}` : ''}
                     </div>
                   </div>
                 ))}
               </div>
-              <SystemsChart systems={live.data.systems} />
+              <SystemsChart systems={live.data.systems} benchmark={benchmark} />
               <div className="chart-foot">
                 <span>Max drawdown headlines are daily-basis; month-end closing figures are shown above.</span>
-                <span>Backtested / tracked index · base 100 · not account equity</span>
+                <span>Backtested / tracked index · base 100 · not account equity · benchmark as of {dataAsof}</span>
               </div>
             </>
           ) : (
@@ -250,7 +266,7 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
           <div className="section-head">
             <div>
               <h2>Recent months</h2>
-              <p>Monthly system returns · {live.status === 'ok' ? `${live.data.recent_months.length} months through ${live.data.recent_months[live.data.recent_months.length - 1].month}` : 'loading'}</p>
+              <p>Monthly system returns · {live.status === 'ok' ? `${live.data.recent_months.length} months through ${live.data.recent_months[live.data.recent_months.length - 1].month}${dataAsof ? ` · as of ${dataAsof}` : ''}` : 'loading'}</p>
             </div>
             {live.status === 'ok' ? <Pill tone="lime">Live</Pill> : <Pill tone="amber">Loading</Pill>}
           </div>
@@ -308,24 +324,23 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
               <span>
                 Growth{' '}
                 <strong className={pnlCls(account.growth ?? 0)}>
-                  {(account.growth ?? 0) > 0 ? '+' : ''}
-                  {inr(account.growth ?? 0)}
+                  <Tri dir={(account.growth ?? 0) < 0 ? -1 : 1} /> {inrSigned(account.growth ?? 0)}
                 </strong>{' '}
-                ({pct(account.growth_pct ?? 0)})
+                ({pct(account.growth_pct ?? 0)} <Tri dir={(account.growth_pct ?? 0) < 0 ? -1 : 1} />)
               </span>
             </div>
           ) : null}
           {account && account.n_positions > 0 ? (
             <>
               <div className={pnlCls(unrealized)} style={{ fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em' }}>
-                {unrealized > 0 ? '+' : ''}{inr(unrealized, 2)}
+                {unrealized < 0 ? <Tri dir={-1} /> : <Tri dir={1} />} {inrSigned(unrealized, 2)}
               </div>
               <div style={{ color: 'var(--muted)', fontSize: 10, marginTop: 4 }}>
-                {unrealized > 0 ? '+' : ''}{pct(unrealizedPct)} on {inr(costBasis, 2)} cost across {account.n_positions} positions
+                <Tri dir={unrealizedPct < 0 ? -1 : 1} /> {pct(unrealizedPct)} on {inr(costBasis, 2)} cost across {account.n_positions} positions
               </div>
               {priceDate ? (
                 <p style={{ color: 'var(--muted)', fontSize: 9.5, margin: '8px 0 0', lineHeight: 1.6 }}>
-                  Prices as of {priceDate}
+                  as of {priceDate}
                 </p>
               ) : null}
             </>

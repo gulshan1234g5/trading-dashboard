@@ -27,6 +27,13 @@ export interface LiveSystem {
   curve: LiveCurvePoint[]
 }
 
+export interface LiveBenchmark {
+  name: string
+  base_note: string
+  months: string[]
+  values: number[]
+}
+
 export interface LiveSnapshot {
   generated_at: string
   data_asof: string
@@ -71,6 +78,8 @@ export interface LiveSnapshot {
     next_decision: string
   }
   systems: LiveSystem[]
+  /** optional: market-reference overlay added with the benchmark export */
+  benchmark?: LiveBenchmark
   recent_months: Array<{ month: string; chakra_pct: number; dhruva_pct: number }>
 }
 
@@ -141,6 +150,18 @@ export function parseLive(raw: any): LiveSnapshot | null {
   if (!Array.isArray(raw.recent_months)) return null
   for (const m of raw.recent_months) {
     if (m === null || typeof m !== 'object' || typeof m.month !== 'string' || typeof m.chakra_pct !== 'number' || typeof m.dhruva_pct !== 'number') return null
+  }
+
+  if (raw.benchmark !== undefined) {
+    const b = raw.benchmark
+    if (b === null || typeof b !== 'object') return null
+    if (typeof b.name !== 'string' || typeof b.base_note !== 'string') return null
+    if (!Array.isArray(b.months) || !b.months.every((m: unknown) => typeof m === 'string')) return null
+    if (
+      !Array.isArray(b.values) ||
+      b.months.length !== b.values.length ||
+      !b.values.every((v: unknown) => typeof v === 'number' && Number.isFinite(v))
+    ) return null
   }
 
   return raw as LiveSnapshot

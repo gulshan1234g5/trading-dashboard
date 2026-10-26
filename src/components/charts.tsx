@@ -1,5 +1,5 @@
 import { useId, useMemo, useState, type PointerEvent } from 'react'
-import type { LiveSystem } from '../lib/live'
+import type { LiveBenchmark, LiveSystem } from '../lib/live'
 import { Segmented } from './ui'
 
 const W = 860
@@ -16,25 +16,36 @@ function monthLabel(iso: string): string {
   return new Date(`${iso}T12:00:00`).toLocaleDateString('en-IN', { month: 'short', year: '2-digit' })
 }
 
-export function SystemsChart({ systems }: { systems: LiveSystem[] }) {
+const BENCH_KEY = 'Nifty 50'
+const BENCH_COLOR = 'var(--muted-dim)'
+
+export function SystemsChart({ systems, benchmark }: { systems: LiveSystem[]; benchmark?: LiveBenchmark }) {
   const [range, setRange] = useState<SystemRange>('ALL')
   const [hover, setHover] = useState<number | null>(null)
   const gradientId = useId().replace(/:/g, '')
   const full = useMemo(() => {
     const byMonth = new Map<string, { month: string; values: Record<string, number> }>()
+    const key = (month: string) => {
+      const entry = byMonth.get(month) ?? { month, values: {} }
+      byMonth.set(month, entry)
+      return entry
+    }
     for (const system of systems) {
-      for (const point of system.curve) {
-        const entry = byMonth.get(point.month) ?? { month: point.month, values: {} }
-        entry.values[system.name] = point.equity_index
-        byMonth.set(point.month, entry)
-      }
+      for (const point of system.curve) key(point.month).values[system.name] = point.equity_index
+    }
+    if (benchmark) {
+      benchmark.months.forEach((month, i) => {
+        const value = benchmark.values[i]
+        if (typeof value === 'number') key(month).values[BENCH_KEY] = value
+      })
     }
     return [...byMonth.values()].sort((a, b) => a.month.localeCompare(b.month))
-  }, [systems])
+  }, [systems, benchmark])
   const visible = useMemo(() => full.slice(-Math.min(full.length, RANGE_MONTHS[range])), [full, range])
 
   const chart = useMemo(() => {
-    const series = systems.map((system) => visible.map((point) => point.values[system.name] ?? NaN))
+    const keys = benchmark ? [...systems.map((s) => s.name), BENCH_KEY] : systems.map((s) => s.name)
+    const series = keys.map((name) => visible.map((point) => point.values[name] ?? NaN))
     const values = series.flat().filter((value) => Number.isFinite(value))
     const min = Math.min(100, ...values)
     const max = Math.max(100, ...values)
@@ -63,7 +74,7 @@ export function SystemsChart({ systems }: { systems: LiveSystem[] }) {
       return { index, label: monthLabel(visible[index].month) }
     })
     return { series, line, area, grid, ticks, innerH, x, y, lastPoint }
-  }, [systems, visible])
+  }, [systems, benchmark, visible])
 
   const active = hover === null ? chart.lastPoint : hover
   const activePoint = visible[active]
@@ -89,6 +100,12 @@ export function SystemsChart({ systems }: { systems: LiveSystem[] }) {
                 </span>
               )
             })}
+            {benchmark ? (
+              <span className="chart-value" style={{ fontSize: 13, color: 'var(--muted-dim)' }}>
+                {activePoint?.values[BENCH_KEY] !== undefined ? activePoint?.values[BENCH_KEY].toFixed(1) : '—'}
+                <span style={{ fontSize: 8, color: 'var(--muted-dim)', marginLeft: 4 }}>{BENCH_KEY}</span>
+              </span>
+            ) : null}
           </div>
           <div className="card-sub">
             {activePoint ? monthLabel(activePoint.month) : ''} · normalised index, base 100
@@ -101,6 +118,11 @@ export function SystemsChart({ systems }: { systems: LiveSystem[] }) {
                 <i className="legend-line" style={{ background: SYSTEM_COLORS[system.name] ?? undefined }} /> {system.name}
               </span>
             ))}
+            {benchmark ? (
+              <span className="legend-key">
+                <i className="legend-line" style={{ background: BENCH_COLOR }} /> {BENCH_KEY} · base 100
+              </span>
+            ) : null}
           </div>
           <Segmented options={SYSTEM_RANGES} value={range} onChange={setRange} ariaLabel="Systems chart range" />
         </div>
@@ -145,6 +167,17 @@ export function SystemsChart({ systems }: { systems: LiveSystem[] }) {
               strokeLinecap="round"
             />
           ))}
+          {benchmark && chart.series.length > systems.length ? (
+            <path
+              d={chart.line(chart.series[chart.series.length - 1])}
+              fill="none"
+              stroke={BENCH_COLOR}
+              strokeWidth="2"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              opacity="0.85"
+            />
+          ) : null}
           {activePoint ? (
             <line x1={chart.x(active)} x2={chart.x(active)} y1={M.top} y2={H - M.bottom} stroke="#3b4b5e" strokeWidth="1" strokeDasharray="3 3" />
           ) : null}
@@ -173,6 +206,12 @@ export function SystemsChart({ systems }: { systems: LiveSystem[] }) {
                 </strong>
               </div>
             ))}
+            {benchmark && activePoint.values[BENCH_KEY] !== undefined ? (
+              <div className="chart-tooltip-row" key={BENCH_KEY}>
+                <span>{BENCH_KEY}</span>
+                <strong style={{ color: 'var(--muted-dim)' }}>{activePoint.values[BENCH_KEY].toFixed(1)}</strong>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>

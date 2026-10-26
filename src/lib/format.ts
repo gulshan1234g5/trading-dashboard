@@ -29,8 +29,9 @@ export function pct(value: number, decimals = 2, withSign = true): string {
   return `${sign}${value.toFixed(decimals)}%`
 }
 
-export function signedInr(value: number): string {
-  return `${value > 0 ? '+' : ''}${inr(value)}`
+// Explicit +/− sign so color is never the only signal on green/red amounts.
+export function inrSigned(value: number, decimals = 0): string {
+  return `${value < 0 ? '−' : '+'}${inr(Math.abs(value), decimals)}`
 }
 
 export function shortDate(iso: string): string {

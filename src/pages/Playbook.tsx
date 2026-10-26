@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { CheckSquare, Square } from 'lucide-react'
 import { useLive } from '../lib/live'
 import { inr } from '../lib/format'
-import { PageHeader, Pill } from '../components/ui'
+import { PageHeader, Pill, Tri } from '../components/ui'
 
 // Verbatim from /root/rlt/RUNBOOK.md (frozen 2026-10-22) and reports/live/state.json
 // — read-only source of truth; this page renders it, it never edits it.
@@ -160,15 +160,20 @@ export function Playbook() {
             <div className="budget-labels">
               <span>Equity vs healthy floor</span>
               <strong className={account.floor_status === 'below' ? 'neg' : 'pos'}>
-                {inr(account.equity)} of {inr(account.capital_floor)}
+                <Tri dir={account.floor_status === 'below' ? -1 : 1} /> {inr(account.equity)} of {inr(account.capital_floor)}
               </strong>
             </div>
             <div className="budget-labels">
               <span>Top-up to the ₹22,500 hard floor</span>
               <strong className={account.equity < 22_500 ? 'neg' : undefined}>
-                {inr(Math.max(0, 22_500 - account.equity))}
+                {account.equity < 22_500 ? `−${inr(Math.max(0, 22_500 - account.equity))}` : inr(0)}
               </strong>
             </div>
+            {account.prices_asof ? (
+              <div style={{ color: 'var(--muted-dim)', fontSize: 8.5, fontFamily: 'var(--font-mono)', marginTop: 8 }}>
+                prices · as of {account.prices_asof}
+              </div>
+            ) : null}
           </div>
         ) : null}
       </section>

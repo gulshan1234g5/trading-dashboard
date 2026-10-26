@@ -88,6 +88,8 @@ export function Systems() {
                     {system.status === 'PARKED'
                       ? `Parked · activates at ₹4.5L capital — see switch rule below${system.name === 'DHRUVA' && live.data.account.equity < 450_000 ? ` · now ${inr(live.data.account.equity)}` : ''}`
                       : 'Live allocation'}
+                    {' · backtest as of '}
+                    {live.data.data_asof}
                   </div>
                 </div>
               )
@@ -99,11 +101,16 @@ export function Systems() {
               <div className="section-head">
                 <div>
                   <h2>Equity curves</h2>
-                  <p>CHAKRA vs DHRUVA · normalised monthly index, base 100 · {live.data.systems[0]?.curve.length ?? 0} months</p>
+                  <p>CHAKRA vs DHRUVA vs Nifty 50 · normalised monthly index, base 100 · {live.data.systems[0]?.curve.length ?? 0} months</p>
                 </div>
                 <Pill tone="lime">Live</Pill>
               </div>
-              <SystemsChart systems={live.data.systems} />
+              <SystemsChart systems={live.data.systems} benchmark={live.data.benchmark} />
+              {live.data.benchmark ? (
+                <p style={{ color: 'var(--muted-dim)', fontSize: 9, margin: '2px 17px 4px', lineHeight: 1.6 }}>
+                  Base 100 at {monthLabel(live.data.benchmark.months[0])}. Nifty line is the market reference — deposits are excluded from both curves.
+                </p>
+              ) : null}
               <div className="chart-foot">
                 <span>Backtested / tracked index · base 100 · not account equity</span>
                 <span>Hover to read any month's index value</span>
@@ -150,7 +157,7 @@ export function Systems() {
               <div className="section-head">
                 <div>
                   <h2>Recent months</h2>
-                  <p>Monthly returns · negatives red, zeros muted</p>
+                  <p>Monthly returns · negatives red, zeros muted · as of {live.data.data_asof}</p>
                 </div>
                 <Pill tone="lime">Live</Pill>
               </div>
