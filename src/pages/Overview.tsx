@@ -24,6 +24,11 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
   const account = live.status === 'ok' ? live.data.account : null
   const gate = live.status === 'ok' ? live.data.gate : null
   const floorPct = account ? Math.min(100, (account.equity / account.capital_floor) * 100) : 0
+  const costBasis = account ? account.holdings.reduce((sum, h) => sum + h.qty * (h.avg ?? 0), 0) : 0
+  const unrealized = account ? (account.unrealized_pnl ?? account.holdings.reduce((sum, h) => sum + (h.pnl ?? 0), 0)) : 0
+  const unrealizedPct = costBasis > 0 ? (unrealized / costBasis) * 100 : 0
+  const priceDate = account?.holdings.find((h) => h.last_date)?.last_date
+  const pnlCls = (pnl: number) => (pnl < 0 ? 'neg' : 'pos')
 
   return (
     <>
@@ -287,24 +292,54 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
             </div>
           </div>
           {account && account.holdings.length > 0 ? (
-            <div className="table-wrap">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Instrument</th>
-                    <th>Qty</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {account.holdings.map((holding) => (
-                    <tr key={holding.symbol}>
-                      <td className="symbol-name">{holding.symbol}</td>
-                      <td className="num">{holding.qty}</td>
+            <>
+              <div className="table-wrap">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Instrument</th>
+                      <th>Qty</th>
+                      <th>Avg</th>
+                      <th>Last</th>
+                      <th>P&amp;L</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {account.holdings.map((holding) => (
+                      <tr key={holding.symbol}>
+                        <td className="symbol-name">{holding.symbol}</td>
+                        <td className="num">{holding.qty}</td>
+                        <td className="num">{holding.avg != null ? inr(holding.avg, 2) : '—'}</td>
+                        <td className="num">{holding.last != null ? inr(holding.last, 2) : '—'}</td>
+                        <td className={`num ${holding.pnl != null ? pnlCls(holding.pnl) : ''}`}>
+                          {holding.pnl != null ? (
+                            <>
+                              {holding.pnl > 0 ? '+' : ''}{inr(holding.pnl, 2)}{' '}
+                              <span style={{ fontSize: 9 }}>{pct(holding.pnl_pct ?? 0)}</span>
+                            </>
+                          ) : (
+                            '—'
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="budget-row" style={{ marginTop: 10 }}>
+                <div className="budget-labels">
+                  <span>Unrealized P&amp;L</span>
+                  <strong className={pnlCls(unrealized)}>
+                    {unrealized > 0 ? '+' : ''}{inr(unrealized, 2)} ({pct(unrealizedPct)} total across holdings)
+                  </strong>
+                </div>
+              </div>
+              {priceDate ? (
+                <p style={{ color: 'var(--muted)', fontSize: 9.5, margin: '6px 0 0', lineHeight: 1.6 }}>
+                  Prices at NSE close {priceDate}
+                </p>
+              ) : null}
+            </>
           ) : (
             <div style={{ padding: 18 }}>
               <EmptyState

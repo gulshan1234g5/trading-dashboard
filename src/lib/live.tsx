@@ -34,8 +34,18 @@ export interface LiveSnapshot {
   account: {
     broker: string
     cash: number
-    holdings: Array<{ symbol: string; qty: number }>
+    holdings: Array<{
+      symbol: string
+      qty: number
+      /** optional: old live.json exports predate per-position P&L */
+      avg?: number
+      last?: number
+      last_date?: string
+      pnl?: number
+      pnl_pct?: number
+    }>
     n_positions: number
+    unrealized_pnl?: number
     equity: number
     capital_floor: number
     floor_status: 'below' | 'at_or_above'
@@ -76,7 +86,16 @@ export function parseLive(raw: any): LiveSnapshot | null {
   if (typeof a.capital_floor !== 'number') return null
   if (a.floor_status !== 'below' && a.floor_status !== 'at_or_above') return null
   if (typeof a.capital_plan_note !== 'string') return null
-  if (!Array.isArray(a.holdings) || a.holdings.some((h: unknown) => h === null || typeof h !== 'object' || typeof (h as { symbol?: unknown }).symbol !== 'string')) return null
+  const optNum = (v: unknown) => v === undefined || typeof v === 'number'
+  if (a.unrealized_pnl !== undefined && typeof a.unrealized_pnl !== 'number') return null
+  if (!Array.isArray(a.holdings)) return null
+  for (const h of a.holdings) {
+    if (h === null || typeof h !== 'object') return null
+    const o = h as Record<string, unknown>
+    if (typeof o.symbol !== 'string' || typeof o.qty !== 'number') return null
+    if (!optNum(o.avg) || !optNum(o.last) || !optNum(o.pnl) || !optNum(o.pnl_pct)) return null
+    if (o.last_date !== undefined && typeof o.last_date !== 'string') return null
+  }
 
   const g = raw.gate
   if (g === null || typeof g !== 'object') return null
