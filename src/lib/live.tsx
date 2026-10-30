@@ -176,7 +176,9 @@ export function LiveProvider({ children }: { children: ReactNode }) {
       // First try the configured base URL. Dev servers SPA-fallback that path to
       // index.html, so a non-JSON response retries document-relative.
       for (const url of dedupe([LIVE_URL, 'live.json'])) {
-        const response = await fetch(url, { headers: { Accept: 'application/json' } })
+        // no-store: GitHub Pages serves live.json with max-age=600, which showed stale
+        // balances/months for up to 10 min after a sync. Always take the network copy.
+        const response = await fetch(url, { headers: { Accept: 'application/json' }, cache: 'no-store' })
         if (!response.ok) continue
         const contentType = response.headers.get('content-type') ?? ''
         if (contentType.includes('text/html')) continue
