@@ -266,9 +266,9 @@ export function Overview({ navigate }: { navigate: (page: PageId) => void }) {
           <div className="section-head">
             <div>
               <h2>Recent months</h2>
-              <p>Monthly system returns · {live.status === 'ok' ? `${live.data.recent_months.length} months through ${live.data.recent_months[live.data.recent_months.length - 1].month}${dataAsof ? ` · as of ${dataAsof}` : ''}` : 'loading'}</p>
+              <p>Backtest, after tax, live config (gate OFF) · {live.status === 'ok' ? `${live.data.recent_months.length} months through ${live.data.recent_months[live.data.recent_months.length - 1].month}${dataAsof ? ` · data as of ${dataAsof}` : ''}` : 'loading'}</p>
             </div>
-            {live.status === 'ok' ? <Pill tone="lime">Live</Pill> : <Pill tone="amber">Loading</Pill>}
+            {live.status === 'ok' ? <Pill tone="neutral">Backtest</Pill> : <Pill tone="amber">Loading</Pill>}
           </div>
           {live.status === 'ok' ? (
             <div className="table-wrap">
