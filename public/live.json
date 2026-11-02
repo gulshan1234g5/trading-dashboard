@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-02T10:44:04Z",
-  "data_asof": "2026-10-30",
+  "generated_at": "2026-11-02T12:26:27Z",
+  "data_asof": "2026-11-02",
   "mode": "REAL",
   "account": {
     "broker": "ZERODHA",
@@ -22,9 +22,9 @@
   "gate": {
     "mode": "off",
     "filter": "OFF",
-    "nifty_close": 23095.45,
-    "dma200": 24041.36,
-    "gap_pct": -3.93,
+    "nifty_close": 23440.8,
+    "dma200": 24027.86,
+    "gap_pct": -2.44,
     "last_decision": "2026-10-30",
     "next_decision": "2026-11-30"
   },
