@@ -3254,3 +3254,357 @@ p {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* private tradebook pages */
+.tl-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 18px 16px 46px;
+}
+
+.tl-banner {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 11px 14px;
+  border: 1px solid rgba(245, 196, 91, 0.38);
+  border-radius: var(--radius-sm);
+  background: var(--amber-soft);
+}
+
+.tl-banner svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--amber);
+}
+
+.tl-banner-strong {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+
+.tl-banner-sub {
+  margin-top: 2px;
+  font-size: 9.5px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+}
+
+.tl-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 14px 0 10px;
+}
+
+.tl-tabs > .segmented {
+  flex: 1 1 520px;
+}
+
+.tl-tabs > .segmented button {
+  flex: 1;
+}
+
+.tl-tab-cost {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+.tl-tab-cost strong {
+  color: var(--text-soft);
+}
+
+.tl-import-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.tl-import-grid > .card + .card {
+  grid-column: auto;
+}
+
+.tl-import-grid > .card:last-child {
+  grid-column: 2;
+}
+
+.tl-drop-card {
+  grid-row: span 2;
+}
+
+.tl-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 30px 16px;
+  text-align: center;
+  border: 1.5px dashed var(--line-bright);
+  border-radius: var(--radius);
+  background: var(--panel-soft);
+  color: var(--muted);
+  font-size: 11.5px;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.tl-drop.over {
+  border-color: var(--lime);
+  background: var(--lime-soft);
+  color: var(--lime);
+}
+
+.tl-drop-or {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--muted-dim);
+}
+
+.tl-drop input[type='file'] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.tl-kvs {
+  margin-top: 8px;
+}
+
+.tl-kvs .cost-row {
+  border: 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.tl-kvs .cost-row:last-child {
+  border-bottom: 0;
+}
+
+.tl-cost-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+}
+
+.tl-cost-input input {
+  width: 62px;
+  padding: 3px 6px;
+  text-align: right;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel-raised);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tl-cost-input input:focus {
+  outline: none;
+  border-color: var(--cyan);
+}
+
+.tl-errors {
+  max-height: 150px;
+  overflow-y: auto;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-left: 2px solid var(--amber);
+  border-radius: 4px;
+  background: var(--amber-soft);
+  color: var(--amber);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  line-height: 1.7;
+}
+
+.tl-errors-more {
+  color: var(--muted);
+}
+
+.tl-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tl-note {
+  margin: 9px 0 2px;
+  color: var(--muted);
+  font-size: 9.5px;
+  line-height: 1.6;
+}
+
+.tl-side-card {
+  min-width: 0;
+}
+
+.tl-textarea {
+  display: block;
+  width: 100%;
+  min-height: 92px;
+  margin-top: 4px;
+  padding: 9px 11px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel-raised);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  line-height: 1.7;
+}
+
+.tl-textarea:focus {
+  outline: none;
+  border-color: var(--cyan);
+}
+
+.tl-textarea::placeholder {
+  color: var(--muted-dim);
+}
+
+.tl-date-input {
+  min-height: 34px;
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel-raised);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color-scheme: dark;
+}
+
+.tl-date-input:focus {
+  outline: none;
+  border-color: var(--cyan);
+}
+
+.tl-sort-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}
+
+.tl-sort-btn:hover {
+  color: var(--lime);
+}
+
+.tl-sort-btn span {
+  color: var(--lime);
+}
+
+.tl-ltp-input {
+  width: 92px;
+  padding: 3px 7px;
+  text-align: right;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel-raised);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tl-ltp-input:focus {
+  outline: none;
+  border-color: var(--mint);
+}
+
+.tl-ltp-input::-webkit-outer-spin-button,
+.tl-ltp-input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.tl-foot {
+  border-top: 1px solid var(--line-bright);
+  padding-top: 7px;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+.tl-bar:hover rect {
+  fill-opacity: 1;
+}
+
+.tl-formula {
+  padding: 2px 0;
+}
+
+.tl-formula summary {
+  list-style: none;
+  padding: 4px 0 6px;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tl-formula summary::before {
+  content: '▸ ';
+  color: var(--muted-dim);
+}
+
+.tl-formula[open] summary::before {
+  content: '▾ ';
+}
+
+.tl-formula-row {
+  display: flex;
+  gap: 12px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.tl-formula-row:last-of-type {
+  border-bottom: 0;
+}
+
+.tl-formula-row dt {
+  flex: 0 0 128px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--cyan);
+}
+
+.tl-formula-row dd {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 11px;
+}
+
+@media (max-width: 900px) {
+  .tl-import-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tl-import-grid > .card:last-child,
+  .tl-drop-card {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .tl-shell {
+    padding: 12px 10px 34px;
+  }
+
+  .filter-bar .tl-date-input {
+    width: 100%;
+  }
+}

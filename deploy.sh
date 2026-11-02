@@ -26,6 +26,14 @@ if [ -f .live_deployed_hash ] && [ "$(cat .live_deployed_hash)" = "$hash" ] && [
 fi
 
 npx vite build --base=/trading-dashboard/ --outDir dist
+
+# Privacy gate: the tradebook pages are local-only (local.html / src/pages/private).
+# If any of them ever reach the public build, stop before pushing.
+if [ -e dist/local.html ] || grep -rlq "chakra-tradebook" dist 2>/dev/null; then
+    echo "ABORT: private tradebook code reached the public build - nothing pushed"
+    exit 1
+fi
+
 tmp=$(mktemp -d)
 cp -r dist/. "$tmp"/
 touch "$tmp"/.nojekyll
